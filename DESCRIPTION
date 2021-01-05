@@ -1,0 +1,23 @@
+Package: rlsims
+Title: Simulate behavioral tasks with reinforcement learning algorithms
+Version: 0.0.0.9000
+Authors@R: 
+    c(
+    person(given = "Jonathan",
+           family = "Trattner",
+           role = c("aut", "cre"),
+           email = "jdt@jdtrat.com",
+           comment = c(ORCID = "0000-0002-1097-7603")),
+    person(given = "L. Paul",
+           family = "Sands III",
+           role = c("aut"),
+           email = "lsands@wakehealth.edu")
+           )
+Description: Provides simulation functions for various reinforcement learning algorithms employed by the Kishida Lab in behavioral experiments.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1.9000
+Imports: 
+    purrr
