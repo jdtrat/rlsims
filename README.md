@@ -6,11 +6,11 @@
 
 <!-- badges: end -->
 
-The goal of rlsims is to provide functions to simulate different behavioral tasks used in the [Kishida Lab](https://kishidalab.com).
+The goal of {rlsims} is to provide functions to simulate different behavioral tasks used in the [Kishida Lab](https://kishidalab.com).
 
 ## Installation
 
-You can install the development version of rlsims from Github as follows:
+You can install the development version from Github as follows:
 
 ``` {.r}
 # Install/update rlsims with the development version from GitHub. 
