@@ -238,7 +238,7 @@ rl_agent <- R6::R6Class(
     private = list(
       check_cue_list = function(.cue_list) {
         if (length(.cue_list) != self$num_cues) {
-          cli::cli_abort("{.arg cue_list} must be length {crayon::underline(num_cues)}")
+          cli::cli_abort("{.arg cue_list} must be length {crayon::underline(self$num_cues)}")
         }
 
         all_dataframes <- vapply(.cue_list, inherits, logical(1), "data.frame")
