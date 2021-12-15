@@ -40,10 +40,6 @@ navbar:
     right: [reference, news, github]
   components:
     home:
-    articles:
-      text: Articles
-      menu:
-        - text: "No Article"
     reference:
       text: Reference
       href: reference/index.html
@@ -61,6 +57,12 @@ navbar:
         - text: "No blog post"
         # - text: Version 0.2
         #   href: <url>
+
+articles:
+  - title: Vignettes
+    navbar: ~
+    contents:
+    - simulating-montague_1996
 
 # structure example
 # reference:
