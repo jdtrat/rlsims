@@ -68,6 +68,7 @@ rl_agent <- R6::R6Class(
         cli::cli_div(id = "parent", theme = list(.rlAgentEl = list(`margin-left` = 2)))
         cli::cli_text("<{.emph {toupper(self$model_type)} Simulation Agent}>")
         cli::cli_par(id = "sim-parameters", class = "rlAgentEl")
+        if (private$simulated) cli::cli_text(cli::style_bold(crayon::green("{cli::symbol$tick} Simulations Complete")))
         cli::cli_text('{self$num_trials} {.field Trials}')
         cli::cli_text('{self$num_episodes} {.field Episodes per Trial}')
         cli::cli_text('{self$num_cues} {.field Environmental Cues}')
@@ -281,12 +282,15 @@ rl_agent <- R6::R6Class(
         cli::cli_abort("Cannot access prediction error data. Please double check the simulations occurred.")
       }
 
-      out <- purrr::map_df(seq_len(self$num_trials), ~ {
-        data.frame(trial = round(.x),
-                   episode = seq_len(self$num_episodes),
-                   value = self$RPE[,.x]
-        )
-      })
+      out <- do.call(
+        rbind,
+        lapply(seq_len(self$num_trials), function(.x) {
+          data.frame(trial = round(.x),
+                     episode = seq_len(self$num_episodes),
+                     value = self$RPE[,.x]
+          )
+        })
+      )
 
       if (add_trial_zero) {
         rbind(

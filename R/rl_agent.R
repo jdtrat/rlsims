@@ -117,6 +117,25 @@ rl_set_cues <- function(agent, cue_list, keep_cue_structure = FALSE) {
 
 }
 
+
+#' Simulate the RL Agent
+#'
+#' @description Simulate the RL Agent
+#'
+#' @param agent An object of class "rlAgent" created with
+#'   \code{\link{rl_new_agent}}.
+#' @return The agent object with the completed simulations.
+#'
+#' @export
+#'
+rl_simulate_agent <- function(agent) {
+
+  check_agent(agent)
+
+  agent$simulate_agent()
+
+}
+
 #' Get Tidied Reward Prediction Error Data
 #'
 #' @description Convert the agent's simulated reward prediction errors from a
