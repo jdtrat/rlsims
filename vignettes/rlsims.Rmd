@@ -1,0 +1,22 @@
+---
+title: "Learn rlsims"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Learn rlsims }
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Overview
+
+> We hope to update this page with a brief introduction in the future. For now, we recommend you check out [this book by Sutton and Barto](http://incompleteideas.net/book/bookdraft2017nov5.pdf). 
+
+Reinforcement learning is a computational paradigm describing how an agent learns through interacting with its environment in order to maximize some reward signal. 
+

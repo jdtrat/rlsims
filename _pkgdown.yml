@@ -1,0 +1,83 @@
+destination: docs
+
+url: https://rlsims.jdtrat.com
+repo:
+    home: https://github.com/jdtrat/rlsims/
+    source: https://github.com/jdtrat/rlsims/blob/master/
+    issue: https://github.com/jdtrat/rlsims/issues/
+    user: https://github.com/jdtrat/
+
+template:
+  package: jdtdown
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "rlsims package"
+    twitter:
+      creator: "@jdtrat"
+      card: summary
+
+authors:
+  Jonathan Trattner:
+    href: "https://jdtrat.com"
+
+development:
+  mode: auto
+
+home:
+  strip_header: true
+  links:
+  - text: Learn more
+    href: ""
+
+# structure of website themed with jdtdown
+# based on structure of jdtdown
+navbar:
+  title: ~
+  type: default
+  structure:
+    left:  [intro, examples, articles]
+    right: [reference, news, github]
+  components:
+    home:
+    articles:
+      text: Articles
+      menu:
+        - text: "No Article"
+    reference:
+      text: Reference
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/jdtrat/rlsims
+    news:
+      text: News
+      menu:
+        - text: "Changelog"
+          href: news/index.html
+        - text: "------------------"
+        - text: "Blog posts"
+        # Add blog post where a released version is mentioned.
+        - text: "No blog post"
+        # - text: Version 0.2
+        #   href: <url>
+
+# structure example
+# reference:
+# - title: Output formats
+#   desc: >
+#     These output formats are for building ...
+#   contents:
+#
+# - title: Previewing and rendering books
+#   contents:
+#
+# - title: Publishing
+#   desc: >
+#     Publish...
+#
+#
+# - title: Helper functions
+#   desc: >
+#     These functions are utility functions when working with **rlsims**.
+#   contents:

@@ -34,7 +34,11 @@ Imports:
     purrr,
     R6
 Suggests: 
-    testthat (>= 3.0.0)
+    rmarkdown,
+    knitr,
+    testthat (>= 3.0.0),
+    plotly
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)
+VignetteBuilder: knitr
