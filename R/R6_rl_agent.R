@@ -1,7 +1,7 @@
 
 #' R6 Class representing a new Reinforcement Learning Agent
 #'
-#' Called by \code{\link{rl_agent_new}}.
+#' Called by \code{\link{rl_new_agent}}.
 #'
 #' @keywords internal
 rl_agent <- R6::R6Class(
@@ -62,6 +62,8 @@ rl_agent <- R6::R6Class(
     #' @description Printing method for object of class 'rlAgent'.
     #' @param ... NA; printing function
     print = function(...) {
+      set_message <- paste0(cli::symbol$tick, " set")
+      not_set_message <- paste0(cli::symbol$cross, " not set")
       cli::cli({
         cli::cli_div(id = "parent", theme = list(.rlAgentEl = list(`margin-left` = 2)))
         cli::cli_text("<{.emph {toupper(self$model_type)} Simulation Agent}>")
@@ -71,6 +73,16 @@ rl_agent <- R6::R6Class(
         cli::cli_text('{self$num_cues} {.field Environmental Cues}')
         cli::cli_text('{.field Temporal Discounting Factor} of {self$gamma}')
         cli::cli_text('{.field Learnrate} of {self$alpha}')
+        if (!private$reward_structure_set) {
+          cli::cli_text("{.field Reward Structure:} {crayon::underline(cli::make_ansi_style('pink')(cli::style_bold({not_set_message})))}")
+        } else if (private$reward_structure_set) {
+          cli::cli_text("{.field Reward Structure:} {crayon::underline(cli::make_ansi_style('cyan')(cli::style_bold({set_message})))}")
+        }
+        if (!private$cue_structure_set) {
+          cli::cli_text("{.field Cue Structure:} {crayon::underline(cli::make_ansi_style('pink')(cli::style_bold({not_set_message})))}")
+        } else if (private$cue_structure_set) {
+          cli::cli_text("{.field Cue Structure:} {crayon::underline(cli::make_ansi_style('cyan')(cli::style_bold({set_message})))}")
+        }
         cli::cli_end(id = "model-type")
         cli::cli_end(id = "parent")
       })
@@ -126,8 +138,11 @@ rl_agent <- R6::R6Class(
           self$reward[reward_onset[tr]:reward_offset[tr], tr] <- reward_magnitude[tr]
         }
       }
+
+      private$reward_structure_set <- TRUE
+      invisible(self)
     },
-    #' @description Define the onset episode and offset episode of rewards for
+    #' @description Define the onset episode and offset episode of cues for
     #'   each trial
     #' @param cue_list A list of length `num_cues` where each element contains a
     #'   data frame with columns 'cue', 'onset', 'offset', and 'trial'.
@@ -165,9 +180,20 @@ rl_agent <- R6::R6Class(
           self$present_cues[data$cue, data$onset:data$offset, data$trial] <- 1
         }
 
+        private$cue_structure_set <- TRUE
+        invisible(self)
+
       },
     #' @description Simulate the RL Agent
     simulate_agent = function() {
+
+      if (!private$reward_structure_set & !private$cue_structure_set) {
+        cli::cli_abort("Please set the reward and cue structures before simulating.")
+      } else if (!private$reward_structure_set) {
+        cli::cli_abort("Please set the reward structure before simulating.")
+      } else if (!private$cue_structure_set) {
+        cli::cli_abort("Please set the cue structure before simulating.")
+      }
 
       # Assign values for local use -- allows portability of main simulation
       # code.
@@ -233,6 +259,46 @@ rl_agent <- R6::R6Class(
       self$RPE <- RPE
       self$estimated_value <- estimated_value
 
+      # Log that simulation has occurred
+      private$simulated <- TRUE
+
+      invisible(self)
+
+    },
+    #' @description Convert the agent's simulated reward prediction errors from
+    #'   a matrix where each row is an episode and each column is a trial to a
+    #'   dataframe with columns 'trial', 'episode', and 'value'.
+    #' @param add_trial_zero (Logical) `TRUE` by default and trial zero will be
+    #'   appended to the prediction error data frame with values from
+    #'   `trial_zero_value`. `FALSE` and output will begin at trial one.
+    #' @param trial_zero_value (Numeric) Either a single value (default is 0) or
+    #'   a vector of values to append for trial 0.
+    #' @return A dataframe with the agent's simulated reward prediction errors
+    #'   ('value') for each episode across trials.
+    get_tidy_pe_data = function(add_trial_zero = TRUE, trial_zero_value = 0) {
+
+      if (!private$simulated) {
+        cli::cli_abort("Cannot access prediction error data. Please double check the simulations occurred.")
+      }
+
+      out <- purrr::map_df(seq_len(self$num_trials), ~ {
+        data.frame(trial = round(.x),
+                   episode = seq_len(self$num_episodes),
+                   value = self$RPE[,.x]
+        )
+      })
+
+      if (add_trial_zero) {
+        rbind(
+          data.frame(trial = 0,
+                     episode = seq_len(self$num_episodes),
+                     value = trial_zero_value
+                     ),
+          out
+        )
+      } else if (!add_trial_zero) {
+        out
+      }
     }
   ),
     private = list(
@@ -269,6 +335,12 @@ rl_agent <- R6::R6Class(
           cli::cli_abort("Please make sure each element of {.arg cue_list} contains cue onset values less than cue offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
         }
 
-      }
+      },
+      # Indicator for whether the reward structure was set (e.g., was the method `set_reward` called?)
+      reward_structure_set = FALSE,
+      # Indicator for whether the cue structure was set (e.g., was the method `set_cues` called?)
+      cue_structure_set = FALSE,
+      # Indicator for whether simulations have been done with this agent.
+      simulated = FALSE
   )
 )

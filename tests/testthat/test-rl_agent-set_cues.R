@@ -1,4 +1,4 @@
-test_agent <- rl_agent_new(model_type = "tdrl",
+test_agent <- rl_new_agent(model_type = "tdrl",
                            num_trials = 50,
                            num_episodes = 10,
                            num_cues = 2,

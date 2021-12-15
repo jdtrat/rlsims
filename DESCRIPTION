@@ -1,5 +1,5 @@
 Package: rlsims
-Title: Simulate behavioral tasks with reinforcement learning algorithms
+Title: Simulate Reinforcement Learning Agents in R
 Version: 0.0.0.9000
 Authors@R: 
     c(
@@ -11,19 +11,30 @@ Authors@R:
     person(given = "L. Paul",
            family = "Sands III",
            role = c("aut"),
-           email = "lsands@wakehealth.edu")
+           email = "lsands@wakehealth.edu"),
+    person(given = "Joe",
+           family = "Humphries",
+           role = c("aut"),
+           email = "jhumphries@wakehealth.edu"),
+    person(given = "Emily",
+           family = "DiMarco",
+           role = c("aut"),
+           email = "edimarco@wakehealth.edu")
            )
-Description: Provides simulation functions for various reinforcement learning algorithms employed by the Kishida Lab in behavioral experiments.
+Description: Provides a standardized, user-friendly interface for simulating 
+    reinforcement learning agents in R.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1.9000
 Imports: 
+    cli,
+    crayon,
     purrr,
     R6
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)

@@ -9,7 +9,7 @@ R6 Class representing a new Reinforcement Learning Agent
 R6 Class representing a new Reinforcement Learning Agent
 }
 \details{
-Called by \code{\link{rl_agent_new}}.
+Called by \code{\link{rl_new_agent}}.
 }
 \examples{
 
@@ -70,6 +70,7 @@ across all trials}
 \item \href{#method-set_reward}{\code{rl_agent$set_reward()}}
 \item \href{#method-set_cues}{\code{rl_agent$set_cues()}}
 \item \href{#method-simulate_agent}{\code{rl_agent$simulate_agent()}}
+\item \href{#method-get_tidy_pe_data}{\code{rl_agent$get_tidy_pe_data()}}
 \item \href{#method-clone}{\code{rl_agent$clone()}}
 }
 }
@@ -164,7 +165,7 @@ defined rewards.}
 \if{html}{\out{<a id="method-set_cues"></a>}}
 \if{latex}{\out{\hypertarget{method-set_cues}{}}}
 \subsection{Method \code{set_cues()}}{
-Define the onset episode and offset episode of rewards for
+Define the onset episode and offset episode of cues for
 each trial
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{rl_agent$set_cues(cue_list, keep_cue_structure = FALSE)}\if{html}{\out{</div>}}
@@ -214,6 +215,34 @@ Simulate the RL Agent
 \if{html}{\out{<div class="r">}}\preformatted{rl_agent$simulate_agent()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_tidy_pe_data"></a>}}
+\if{latex}{\out{\hypertarget{method-get_tidy_pe_data}{}}}
+\subsection{Method \code{get_tidy_pe_data()}}{
+Convert the agent's simulated reward prediction errors from
+a matrix where each row is an episode and each column is a trial to a
+dataframe with columns 'trial', 'episode', and 'value'.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{rl_agent$get_tidy_pe_data(add_trial_zero = TRUE, trial_zero_value = 0)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{add_trial_zero}}{(Logical) \code{TRUE} by default and trial zero will be
+appended to the prediction error data frame with values from
+\code{trial_zero_value}. \code{FALSE} and output will begin at trial one.}
+
+\item{\code{trial_zero_value}}{(Numeric) Either a single value (default is 0) or
+a vector of values to append for trial 0.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A dataframe with the agent's simulated reward prediction errors
+('value') for each episode across trials.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
