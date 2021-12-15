@@ -97,7 +97,7 @@ This time, when we print the agent, we can see that simulations have been comple
 
 [^1]: If you prefer a 'tidier' version of this data (helfpul for plotting with [ggplot2](https://ggplot2.tidyverse.org/)) you can get that with `rl_get_tidy_pe_data()`. By default, this function adds a trial zero with zero prediction errors. This is to help with visualizing the RPEs over time. To change that, simply set `add_trial_zero = FALSE`.
 
-```{r access-rpe-6a}
+```{r access-rpe-6a, eval = FALSE}
 agent_6a$RPE
 ```
 
