@@ -1,0 +1,11 @@
+pandoc: 2.7.3
+pkgdown: 2.0.1
+pkgdown_sha: ~
+articles:
+  simulating-montague-1996: simulating-montague-1996.html
+  rlsims: rlsims.html
+last_built: 2021-12-15T20:08Z
+urls:
+  reference: https://rlsims.jdtrat.com/reference
+  article: https://rlsims.jdtrat.com/articles
+
