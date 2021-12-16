@@ -1,7 +1,7 @@
-test_agent <- rl_new_agent(model_type = "tdrl",
+test_agent <- rl_new_agent(model_type = "tdrlConditioning",
+                           model_id = "Testing Example",
                            num_trials = 50,
                            num_episodes = 10,
-                           num_cues = 2,
                            gamma = 1,
                            alpha = 0.05)
 
@@ -10,21 +10,21 @@ test_that("cue error catching works - invalid trial length", {
     test_agent$set_cues(
       list(one =
              data.frame(
-               cue = 1,
                onset = 6,
                offset = 8,
+               magnitude = 1,
                trial = 1:50
                ),
            two =
              data.frame(
-               cue = 2,
                onset = 7,
                offset = 8,
+               magnitude = 1,
                trial = 1:500
              )
            )
       ),
-    regexp = "values for the correct number of trials"
+    regexp = "value per trial"
     )
 })
 
@@ -33,16 +33,16 @@ test_that("cue error catching works - invalid data frame names", {
     test_agent$set_cues(
       list(one =
              data.frame(
-               cuee = 1,
                onset = 6,
                offset = 8,
+               magnitudee = 1,
                trial = 1:50
              ),
            two =
              data.frame(
-               cue = 2,
                onset = 7,
                offset = 8,
+               magnitude = 1,
                trial = 1:50
              )
       )
@@ -56,16 +56,16 @@ test_that("cue error catching works - invalid onset and offset values", {
     test_agent$set_cues(
       list(one =
              data.frame(
-               cue = 1,
                onset = 60,
                offset = 8,
+               magnitude = 1,
                trial = 1:50
              ),
            two =
              data.frame(
-               cue = 2,
                onset = 7,
                offset = 8,
+               magnitude = 1,
                trial = 1:50
              )
       )
@@ -76,16 +76,16 @@ test_that("cue error catching works - invalid onset and offset values", {
     test_agent$set_cues(
       list(one =
              data.frame(
-               cue = 1,
                onset = 6,
                offset = 8,
+               magnitude = 1,
                trial = 1:50
              ),
            two =
              data.frame(
-               cue = 2,
                onset = 7,
                offset = 18,
+               magnitude = 1,
                trial = 1:50
              )
       )

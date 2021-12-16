@@ -1,6 +1,6 @@
 Package: rlsims
 Title: Simulate Reinforcement Learning Agents in R
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     c(
     person(given = "Jonathan",
@@ -19,7 +19,11 @@ Authors@R:
     person(given = "Emily",
            family = "DiMarco",
            role = c("aut"),
-           email = "edimarco@wakehealth.edu")
+           email = "edimarco@wakehealth.edu"),
+    person(given = "Ken",
+           family = "Kishida",
+           role = c("ctb", "fnd"),
+           email = "kkishida@wakehealth.edu")
            )
 Description: Provides a standardized, user-friendly interface for simulating 
     reinforcement learning agents in R.
@@ -37,7 +41,8 @@ Suggests:
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
-    plotly
+    plotly,
+    details
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)

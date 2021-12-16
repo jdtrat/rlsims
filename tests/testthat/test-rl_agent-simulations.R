@@ -1,29 +1,46 @@
-test_agent <- rl_new_agent(model_type = "tdrl",
+test_agent <- rl_new_agent(model_type = "tdrlConditioning",
+                           model_id = "Testing Example",
                            num_trials = 50,
                            num_episodes = 10,
-                           num_cues = 1,
                            gamma = 1,
                            alpha = 0.05)
 
-reward_set <- test_agent$clone()$set_reward(8,8,1)
+
+reward_set <- test_agent$clone()$
+  set_reinforcements(list(
+  data.frame(
+    onset = 8,
+    offset = 8,
+    magnitude = 1,
+    trial = 1:50
+  )
+))
+
 cue_set <- test_agent$clone()$set_cues(
   list(
       one = data.frame(
-        cue = 1,
         onset = 4,
         offset = 8,
+        magnitude = 1,
         trial = 1:50)
       )
 )
 
 both_set <- test_agent$clone()$
-  set_reward(8,8,1)$
+  set_reinforcements(list(
+    data.frame(
+      onset = 8,
+      offset = 8,
+      magnitude = 1,
+      trial = 1:50
+    )
+  ))$
   set_cues(
     list(
       one = data.frame(
-        cue = 1,
         onset = 4,
         offset = 8,
+        magnitude = 1,
         trial = 1:50)
     )
   )
