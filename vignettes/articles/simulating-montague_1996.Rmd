@@ -50,9 +50,9 @@ Agent objects have special printing properties, describing the necessary informa
 agent_6a
 ```
 
-We see that the reward structure and cue structures are not set. To do that, we can use the functions `rl_set_rewards()` and `rl_set_cues()`. The reward should occur at episode 80, which we specify with `reward_onset`; since it only lasted for one episode, we set the `reward_offset` equal to 80, too. In this example, the reward magnitude was 1. However, we can change that if desired with the `reward_magnitude` argument.
+We see that the reward structure and cue structures are not set. To do that, we can use the functions `rl_set_reinforcements()` and `rl_set_cues()`. The reward should occur at episode 80, which we specify with `reward_onset`; since it only lasted for one episode, we set the `reward_offset` equal to 80, too. In this example, the reward magnitude was 1. However, we can change that if desired with the `reward_magnitude` argument.
 
-```{r set_rewards_6a}
+```{r set_reinforcements_6a}
 agent_6a %>%
   rl_set_reward(reward_onset = 80,
                 reward_offset = 80,
@@ -95,7 +95,7 @@ agent_6a %>%
 
 This time, when we print the agent, we can see that simulations have been complete! We found this helpful in tracking which agents need (or do not need) to be simulated. Now, the fun part is to use the simulation data and regenerate Figure 6A from Montague, Dayan, and Sejnowski (1996). To do that, we need to access the prediction error data. This can be gathered as a matrix directly from the agent object:[^1]
 
-[^1]: If you prefer a 'tidier' version of this data (helfpul for plotting with [ggplot2](https://ggplot2.tidyverse.org/)) you can get that with `rl_get_tidy_pe_data()`. By default, this function adds a trial zero with zero prediction errors. This is to help with visualizing the RPEs over time. To change that, simply set `add_trial_zero = FALSE`.
+[^1]: If you prefer a 'tidier' version of this data (helfpul for plotting with [ggplot2](https://ggplot2.tidyverse.org/)) you can get that with `rl_get_pe_data()`. By default, this function adds a trial zero with zero prediction errors. This is to help with visualizing the RPEs over time. To change that, simply set `add_trial_zero = FALSE`.
 
 ```{r access-rpe-6a, eval = FALSE}
 agent_6a$RPE

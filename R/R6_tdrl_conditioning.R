@@ -1,25 +1,25 @@
 
-#' R6 Class representing a new Reinforcement Learning Agent
+#' R6 Class representing a new TDRL agent for Conditioning Simulations
 #'
 #' Called by \code{\link{rl_new_agent}}.
 #'
 #' @keywords internal
-rl_agent <- R6::R6Class(
-  "rlAgent",
+agent_tdrl_conditioning <- R6::R6Class(
+  "tdrlConditioning",
   public = list(
-    #' @field model_type (character) either "tdrl" or "vprl", referencing the
+    #' @field model_id (character) A model identifier referencing the
     #'   reinforcement learning paradigm to perform the simulation.
-    model_type = NULL,
+    model_id = NULL,
     #' @field num_trials (numeric) The number of trials to simulate.
     num_trials = NULL,
     #' @field num_episodes (numeric) The number of episodes per trial.
     num_episodes = NULL,
-    #' @field num_cues (numeric) The number of potential cues interacting with the RL agent.
-    num_cues = NULL,
     #' @field gamma (numeric) The temporal discounting factor of the RL agent
     gamma = NULL,
     #' @field alpha (numeric) The learning rate of the RL agent
     alpha = NULL,
+    #' @field num_cues (numeric) The number of potential cues interacting with the RL agent.
+    num_cues = NULL,
     #' @field present_cues A three-dimensional array tacking what cues are
     #'   present in each episode across all simulated trials
     present_cues = NULL,
@@ -33,28 +33,23 @@ rl_agent <- R6::R6Class(
     #   each episode across all trials
     RPE = NULL,
 
-    #' @description Create a new `rlAgent` object
-    #' @param model_type (character) either "tdrl" or "vprl", referencing the
+    #' @description Create a new `tdrlConditioning` object
+    #' @param model_id model_id (character) A model identifier referencing the
     #'   reinforcement learning paradigm to perform the simulation.
     #' @param num_trials (numeric) The number of trials to simulate.
     #' @param num_episodes (numeric) The number of episodes per trial.
-    #' @param num_cues (numeric) The number of potential cues interacting with
-    #'   the RL agent.
     #' @param gamma (numeric) The temporal discounting factor of the RL agent
     #' @param alpha (numeric) The learning rate of the RL agent
-    initialize = function(model_type,
-                          num_trials, num_episodes, num_cues,
+    initialize = function(model_id,
+                          num_trials, num_episodes,
                           gamma, alpha) {
 
-      self$model_type <- model_type
+      self$model_id <- model_id
       self$num_trials <- num_trials
       self$num_episodes <- num_episodes
-      self$num_cues <- num_cues
       self$gamma <- gamma
       self$alpha <- alpha
 
-      self$present_cues <- zeros(dims = c(num_cues, num_episodes, num_trials))
-      self$estimated_value <-  zeros(dims = c(num_cues, num_episodes, num_trials))
       self$reward <- zeros(dims = c(num_episodes, num_trials))
 
     },
@@ -66,12 +61,12 @@ rl_agent <- R6::R6Class(
       not_set_message <- paste0(cli::symbol$cross, " not set")
       cli::cli({
         cli::cli_div(id = "parent", theme = list(.rlAgentEl = list(`margin-left` = 2)))
-        cli::cli_text("<{.emph {toupper(self$model_type)} Simulation Agent}>")
+        cli::cli_text("<{.emph {crayon::underline('tdrlConditioning')} Simulation Agent}>")
+        cli::cli_text("ID: {.val {self$model_id}}")
         cli::cli_par(id = "sim-parameters", class = "rlAgentEl")
         if (private$simulated) cli::cli_text(cli::style_bold(crayon::green("{cli::symbol$tick} Simulations Complete")))
         cli::cli_text('{self$num_trials} {.field Trials}')
         cli::cli_text('{self$num_episodes} {.field Episodes per Trial}')
-        cli::cli_text('{self$num_cues} {.field Environmental Cues}')
         cli::cli_text('{.field Temporal Discounting Factor} of {self$gamma}')
         cli::cli_text('{.field Learnrate} of {self$alpha}')
         if (!private$reward_structure_set) {
@@ -90,101 +85,77 @@ rl_agent <- R6::R6Class(
     },
     #' @description Define the onset episode and offset episode of rewards for
     #'   each trial
-    #' @param reward_onset (Numeric) The episode number a reward presentation
-    #'   begins. Either a single number where reward is presented at the same
-    #'   episode in all simulated trial or a numeric vector of length
-    #'   `num_trials` with reward onset occurring in different episodes.
-    #' @param reward_offset (Numeric) The episode number a reward presentation
-    #'   ends. Either a single number where reward is presented at the same
-    #'   episode in all simulated trial or a numeric vector of length
-    #'   `num_trials` with reward offset occurring in different episodes.
-    #' @param reward_magnitude (Numeric) The magnitude of the reward. Either a
-    #'   single number where reward is presented with the same magnitude across
-    #'   all simulated trials or a numeric vector of length `num_trials` with
-    #'   reward magnitude differing across trials.
-    #' @param keep_reward_structure (Logical) `FALSE` (default) and any
-    #'   existing reward structure will be replaced when called. `TRUE` and the
-    #'   reward structure will be modified but will not remove previously
-    #'   defined rewards.
+    #' @param reinforcement_input A list containing a data frame with columns 'onset',
+    #'   'offset', 'magnitude', and 'trial' describing, respectively, the
+    #'   episode number a reward presentation begins; the episode number the
+    #'   reward presentation ends; the magnitude of the reward; the trials the
+    #'   rewards occur on.
+    #' @param keep_reward_structure (Logical) `FALSE` (default) and any existing
+    #'   reward structure will be replaced when called. `TRUE` and the reward
+    #'   structure will be modified but will not remove previously defined
+    #'   rewards.
     #'
-    set_reward = function(reward_onset, reward_offset, reward_magnitude, keep_reward_structure = FALSE) {
+    set_reinforcements = function(reinforcement_input, keep_reward_structure = FALSE) {
 
-      reward_lengths <- lengths(list(reward_onset, reward_offset, reward_magnitude))
-
-      if (!all(reward_lengths == self$num_trials)) {
-
-        if (all(reward_lengths == 1)) {
-        reward_onset <- rep(reward_onset, length.out = self$num_trials)
-        reward_offset <- rep(reward_offset, length.out = self$num_trials)
-        reward_magnitude <- rep(reward_magnitude, length.out = self$num_trials)
-        } else {
-          args <- names(as.list(match.call()))[-1]
-          cli::cli_abort("{.arg {args}} must be of length {.emph {crayon::underline(1)}} or {.emph {crayon::underline(self$num_trials)}}")
-        }
-
-      }
-
-      if (!all(reward_onset <= reward_offset)) {
-        cli::cli_abort("{.arg reward_onset} set to occur after {.arg reward_offset}.")
-      }
+      private$check_reinforcement_input(.reinforcement_input = reinforcement_input)
 
       if (!keep_reward_structure) {
         self$reward <- zeros(dims = c(self$num_episodes, self$num_trials))
       }
 
-      for (tr in seq_len(self$num_trials)) {
-        if (reward_onset[tr] == reward_offset[tr]) {
-          self$reward[reward_onset,tr] <- reward_magnitude[tr]
-        } else if (reward_onset[tr] < reward_offset[tr]) {
-          self$reward[reward_onset[tr]:reward_offset[tr], tr] <- reward_magnitude[tr]
+      for (row in 1:nrow(reinforcement_input[[1]])) {
+        data <- reinforcement_input[[1]][row,]
+        if (data$onset == data$offset) {
+          self$reward[data$onset, data$trial] <- data$magnitude
+        } else if (data$onset < data$offset) {
+          self$reward[data$onset:data$offset, data$trial] <- data$magnitude
         }
       }
 
       private$reward_structure_set <- TRUE
       invisible(self)
     },
-    #' @description Define the onset episode and offset episode of cues for
-    #'   each trial
-    #' @param cue_list A list of length `num_cues` where each element contains a
-    #'   data frame with columns 'cue', 'onset', 'offset', and 'trial'.
-    #' @param keep_cue_structure (Logical) `FALSE` (default) and any
-    #'   existing cue structure will be replaced when called. `TRUE` and the
-    #'   cue structure will be modified but will not remove previously
-    #'   defined cues.
-    #' @examples
-    #' cue_data_list <- list(
-    #'   one = data.frame(
-    #'     cue = 1,
-    #'     onset = 60,
-    #'     offset = 80,
-    #'     trial = 1:500),
-    #'   two = data.frame(
-    #'     cue = 2,
-    #'     onset = 70,
-    #'     offset = 80,
-    #'     trial = 1:500
-    #'   )
-    #' )
+    #' @description Define the onset episode and offset episode of cues for each
+    #'   trial.
+    #' @param cue_input A list of cues where each element contains a data frame
+    #'   with columns 'onset', 'offset', 'magnitude', and 'trial' describing,
+    #'   respectively, the episode number a cue presentation begins; the episode
+    #'   number the cue presentation ends; the magnitude (saliency of a cue) of
+    #'   the cue; the trials the cues occur.
+    #' @param keep_cue_structure (Logical) `FALSE` (default) and any existing
+    #'   cue structure will be replaced when called. `TRUE` and the cue
+    #'   structure will be modified but will not remove previously defined cues.
     #'
-    set_cues = function(cue_list, keep_cue_structure = FALSE) {
+    set_cues = function(cue_input, keep_cue_structure = FALSE) {
 
-        private$check_cue_list(.cue_list = cue_list)
+      private$check_cue_input(.cue_input = cue_input)
 
-        cue_data <- do.call(rbind, cue_list)
+      self$num_cues <- length(cue_input)
 
-        if (!keep_cue_structure) {
-          self$present_cues <- zeros(dims = c(self$num_cues, self$num_episodes, self$num_trials))
+      cue_data <- do.call(rbind,
+                          lapply(seq_along(cue_input), function(x) {
+                            cbind(cue_number = x, cue_input[[x]])
+                          })
+      )
+
+      if (!keep_cue_structure) {
+        self$present_cues <- zeros(dims = c(self$num_cues, self$num_episodes, self$num_trials))
+      }
+
+
+      for (row in 1:nrow(cue_data)) {
+        data <- cue_data[row,]
+        if (data$onset == data$offset) {
+          self$present_cues[data$cue_number, data$onset, data$trial] <- data$magnitude
+        } else if (data$onset < data$offset) {
+          self$present_cues[data$cue_number, data$onset:data$offset, data$trial] <- data$magnitude
         }
+      }
 
-        for (row in 1:nrow(cue_data)) {
-          data <- cue_data[row,]
-          self$present_cues[data$cue, data$onset:data$offset, data$trial] <- 1
-        }
+      private$cue_structure_set <- TRUE
+      invisible(self)
 
-        private$cue_structure_set <- TRUE
-        invisible(self)
-
-      },
+    },
     #' @description Simulate the RL Agent
     simulate_agent = function() {
 
@@ -198,6 +169,7 @@ rl_agent <- R6::R6Class(
 
       # Assign values for local use -- allows portability of main simulation
       # code.
+      num_cues <- self$num_cues
       num_trials <- self$num_trials
       num_episodes <- self$num_episodes
 
@@ -205,12 +177,12 @@ rl_agent <- R6::R6Class(
       alpha <- self$alpha
 
       present_cues <- self$present_cues
-      estimated_value <- self$estimated_value
+      estimated_value <- zeros(dims = c(num_cues, num_episodes, num_trials))
       reward <- self$reward
 
       # Initialize a matrix used in each trial tracking the estimated episode value associated
       # with each cue
-      cue_associated_value <- zeros(dims = c(self$num_cues, self$num_episodes))
+      cue_associated_value <- zeros(dims = c(num_cues, num_episodes))
 
       # Initialize a matrix tracking the reward prediction errors occurring in each episode
       # across all trials
@@ -218,7 +190,7 @@ rl_agent <- R6::R6Class(
 
       # Initialize expected cues; this should be 0 initially if no cues have been
       # experienced then there is no expectation of any
-      expected_cues <- rep(0, self$num_cues)
+      expected_cues <- rep(0, num_cues)
 
       for (tr in 1:num_trials) {
         for (ep in 1:(num_episodes - 1)) {
@@ -276,7 +248,7 @@ rl_agent <- R6::R6Class(
     #'   a vector of values to append for trial 0.
     #' @return A dataframe with the agent's simulated reward prediction errors
     #'   ('value') for each episode across trials.
-    get_tidy_pe_data = function(add_trial_zero = TRUE, trial_zero_value = 0) {
+    get_pe_data = function(add_trial_zero = TRUE, trial_zero_value = 0) {
 
       if (!private$simulated) {
         cli::cli_abort("Cannot access prediction error data. Please double check the simulations occurred.")
@@ -297,7 +269,7 @@ rl_agent <- R6::R6Class(
           data.frame(trial = 0,
                      episode = seq_len(self$num_episodes),
                      value = trial_zero_value
-                     ),
+          ),
           out
         )
       } else if (!add_trial_zero) {
@@ -305,46 +277,63 @@ rl_agent <- R6::R6Class(
       }
     }
   ),
-    private = list(
-      check_cue_list = function(.cue_list) {
-        if (length(.cue_list) != self$num_cues) {
-          cli::cli_abort("{.arg cue_list} must be length {crayon::underline(self$num_cues)}")
-        }
+  private = list(
+    check_cue_input = function(.cue_input) {
 
-        all_dataframes <- vapply(.cue_list, inherits, logical(1), "data.frame")
+      all_dataframes <- vapply(.cue_input, inherits, logical(1), "data.frame")
 
-        correct_dataframe_names <- vapply(.cue_list,
-                                          function(x) all(names(x) == c("cue", "onset", "offset", "trial")),
+      correct_dataframe_names <- vapply(.cue_input,
+                                        function(x) all(names(x) == c("onset", "offset", "magnitude", "trial")),
+                                        logical(1))
+
+      correct_dataframe_lengths <- vapply(.cue_input,
+                                          function(x) nrow(x) <= self$num_trials,
                                           logical(1))
 
-        correct_dataframe_lengths <- vapply(.cue_list,
-                                          function(x) nrow(x) == self$num_trials,
-                                          logical(1))
+      onset_offset_within_bounds <- vapply(.cue_input,
+                                           function(x) all(x$onset <= x$offset) && all(x$offset <= self$num_episodes),
+                                           logical(1))
 
-        onset_offset_within_bounds <- vapply(.cue_list,
-                                             function(x) all(x$onset <= x$offset) && all(x$offset < self$num_episodes),
-                                             logical(1))
-
-        if (!all(all_dataframes) || !all(correct_dataframe_names)) {
-          cli::cli_abort("Please make sure each element of {.arg cue_list} contains a {.cls data frame} with columns named 'cue', 'onset', 'offset', and 'trial'.")
-        }
+      if (!all(all_dataframes) || !all(correct_dataframe_names)) {
+        cli::cli_abort("Please make sure each element of {.arg cue_input} contains a {.cls data frame} with columns named 'onset', 'offset', 'magnitude', and 'trial'.")
+      }
 
 
-        if (!all(correct_dataframe_lengths)) {
-          cli::cli_abort("Please make sure each element of {.arg cue_list} contains onset and offset values for the correct number of trials ({self$num_trials}).")
-        }
+      if (!all(correct_dataframe_lengths)) {
+        cli::cli_abort("Please make sure each element of {.arg cue_input} contains at most one onset and offset value per trial (no more than {self$num_trials}).")
+      }
 
-        if (!all(onset_offset_within_bounds)) {
+      if (!all(onset_offset_within_bounds)) {
 
-          cli::cli_abort("Please make sure each element of {.arg cue_list} contains cue onset values less than cue offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
-        }
+        cli::cli_abort("Please make sure each element of {.arg cue_input} contains cue onset values less than cue offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
+      }
 
-      },
-      # Indicator for whether the reward structure was set (e.g., was the method `set_reward` called?)
-      reward_structure_set = FALSE,
-      # Indicator for whether the cue structure was set (e.g., was the method `set_cues` called?)
-      cue_structure_set = FALSE,
-      # Indicator for whether simulations have been done with this agent.
-      simulated = FALSE
+    },
+    check_reinforcement_input = function(.reinforcement_input) {
+
+      correct_input <- inherits(.reinforcement_input, "list") && all(names(.reinforcement_input[[1]]) == c("onset", "offset", "magnitude", "trial"))
+
+      correct_dataframe_length <- length(.reinforcement_input) == 1 && nrow(.reinforcement_input[[1]]) <= self$num_trials
+
+      onset_offset_within_bounds <- all(.reinforcement_input[[1]]$onset <= .reinforcement_input[[1]]$offset) && all(.reinforcement_input[[1]]$offset <= self$num_episodes)
+
+      if (!correct_input) {
+        cli::cli_abort("Please make sure {.arg reinforcement_input} is a {.cls list} with one element of class {.cls data.frame} that has columns 'onset', 'offset', 'magnitude', and 'trial'.")
+      }
+
+      if (!correct_dataframe_length) {
+        cli::cli_abort("Please make sure the {.arg reinforcement_input} data frame has at most one value per trial (no more than {self$num_trials}).")
+      }
+
+      if (!all(onset_offset_within_bounds)) {
+        cli::cli_abort("Please make sure the {.arg reinforcement_input} data frame contains onset values less than offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
+      }
+    },
+    # Indicator for whether the reward structure was set (e.g., was the method `set_reward` called?)
+    reward_structure_set = FALSE,
+    # Indicator for whether the cue structure was set (e.g., was the method `set_cues` called?)
+    cue_structure_set = FALSE,
+    # Indicator for whether simulations have been done with this agent.
+    simulated = FALSE
   )
 )
