@@ -39,14 +39,14 @@
 
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rlsims</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
 
       <!--<div class="navbar-brand-container">
         <a class="navbar-brand" href="../index.html">rlsims</a>
         <div class="info hidden-xs hidden-sm">
           <span class="partof">part of  <a href=""></a></span>
-          <span class="version version-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+          <span class="version version-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
         </div>
       </div>-->
     </div>
@@ -122,7 +122,129 @@
 <blockquote>
 <p>We hope to update this page with a brief introduction in the future. For now, we recommend you check out <a href="http://incompleteideas.net/book/bookdraft2017nov5.pdf" class="external-link">this book by Sutton and Barto</a>.</p>
 </blockquote>
-<p>Reinforcement learning is a computational paradigm describing how an agent learns through interacting with its environment in order to maximize some reward signal.</p>
+<p>Reinforcement learning is a computational paradigm describing how an agent learns through interacting with its environment in order to maximize positive reinforcements.</p>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>To simulate an RL agent on a specific task/environment, you need to create a specific agent. Supported ones can be accessed by calling <code><a href="../reference/available_agents.html">rlsims::available_agents()</a></code>. For this demo, we’ll walk through how to create an temporal-difference reinforcement learning (TDRL) agent to explore the concept of back-propagation, classical conditioning, whereby a positive prediction error signal, in response to an unexpected positive reinforcement, shifts from the time the reward is delivered to the earliest environmental cue that predicts it. Consider the following description:</p>
+<blockquote>
+<p>Over 100 trials, each with ten distinct timesteps or ‘episodes’, we presented a stimulus on the third episode which was always followed by a reward at the eighth episode.</p>
+</blockquote>
+<p>We can model this with TDRL by creating an RL Agent of type ‘tdrlConditioning’. First, we specify <code>model_type = "tdrlConditioning"</code> to ensure all methods are applied for the desired algorithm. The argument <code>model_id</code> is simply a description that can be useful for distinguishing between multiple agents simulated in the same R session. As described above, we are simulating over 100 trials, each of which has ten episodes. We’re arbitrarily setting the temporal discounting factor, <span class="math inline">\(0 \leq \gamma \leq 1\)</span>, to simplify the algorithm (<code>gamma = 1</code>). Similarly, we’ll set learning rate, <span class="math inline">\(\alpha\)</span>, as 0.3 (<code>alpha = 0.05</code>).</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">tdrlCond</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rl_new_agent.html">rl_new_agent</a></span><span class="op">(</span>model_type <span class="op">=</span> <span class="st">"tdrlConditioning"</span>,
+                         model_id <span class="op">=</span> <span class="st">"Classical Conditioning via TDRL"</span>,
+                         num_trials <span class="op">=</span> <span class="fl">100</span>, 
+                         num_episodes <span class="op">=</span> <span class="fl">10</span>, 
+                         gamma <span class="op">=</span> <span class="fl">1</span>, 
+                         alpha <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></code></pre></div>
+<p>RL Agent objects have special printing properties, describing meta information for an agent:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tdrlCond</span>
+<span class="co">#&gt; &lt;<span style="font-style: italic; text-decoration: underline;">tdrlConditioning</span><span style="font-style: italic;"> Simulation Agent</span>&gt;</span>
+<span class="co">#&gt; ID: <span style="color: #0000BB;">"Classical Conditioning via TDRL"</span></span>
+<span class="co">#&gt;   100 <span style="color: #00BB00;">Trials</span></span>
+<span class="co">#&gt;   10 <span style="color: #00BB00;">Episodes per Trial</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Temporal Discounting Factor</span> of 1</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Learnrate</span> of 0.3</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Reward Structure:</span> <span style="color: #FFD7D7; font-weight: bold; text-decoration: underline;">✖ not set</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Cue Structure:</span> <span style="color: #FFD7D7; font-weight: bold; text-decoration: underline;">✖ not set</span></span></code></pre></div>
+<p>Note that, although we’ve defined the number of trials and episodes, we haven’t specified the timing of the cues or the reward. To do that, we will use the functions <code><a href="../reference/rl_set_reinforcements.html">rl_set_reinforcements()</a></code> and <code><a href="../reference/rl_set_cues.html">rl_set_cues()</a></code>. Both functions take a list with a <code>data.frame</code> that has columns ‘onset’, ‘offset’, ‘magnitude’, and ‘trial’. ‘onset’ describes the episode number the reinforcement and cue first appear, and the offset specifies the episode number their presentation should terminate. ‘magnitude’ dictates the saliency and value of the cue and reinforcement, respectively. ‘trial’ defines on which trials cues and reinforcements defined in the onset/offset/magnitude columns occur.</p>
+<p>To begin, we’ll specify the cue structure where it is present (<code>magnitude = 1</code>) at episode three (<code>onset = 3</code>) on all one-hundred trials (<code>trial = 1:100</code>). The way we chose to implement the TDRL algorithm, the cue must “remain” until the reward is delivered, which we specified as the eighth episode (<code>offset = 8</code>).<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> We construct these parameters in a data frame and wrap it in a list. Doing so allows us to generalize the TDRL algorithm for environments with multiple cues. For this example, the cue structure looks like this:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">cues_tdrlCond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  one <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+    onset <span class="op">=</span> <span class="fl">3</span>,
+    offset <span class="op">=</span> <span class="fl">8</span>,
+    magnitude <span class="op">=</span> <span class="fl">1</span>,
+    trial <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>
+  <span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p>We can set the cue list as follows:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tdrlCond</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/rl_set_cues.html">rl_set_cues</a></span><span class="op">(</span>cue_input <span class="op">=</span> <span class="va">cues_tdrlCond</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; &lt;<span style="font-style: italic; text-decoration: underline;">tdrlConditioning</span><span style="font-style: italic;"> Simulation Agent</span>&gt;</span>
+<span class="co">#&gt; ID: <span style="color: #0000BB;">"Classical Conditioning via TDRL"</span></span>
+<span class="co">#&gt;   100 <span style="color: #00BB00;">Trials</span></span>
+<span class="co">#&gt;   10 <span style="color: #00BB00;">Episodes per Trial</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Temporal Discounting Factor</span> of 1</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Learnrate</span> of 0.3</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Reward Structure:</span> <span style="color: #FFD7D7; font-weight: bold; text-decoration: underline;">✖ not set</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Cue Structure:</span> <span style="color: #00BBBB; font-weight: bold; text-decoration: underline;">✔ set</span></span></code></pre></div>
+<p>By printing it, we can see that the cue structure has been registered. We’ll now do the same for the reinforcement structure. A reinforcement of <code>magnitude = 1</code>, a positive reinforcement, is delivered only at episode eight (<code>onset = 8</code> and <code>offset = 8</code>) for all one-hundred trials (<code>trial = 1:100</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">reinforcements_tdrlCond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+      onset <span class="op">=</span> <span class="fl">8</span>,
+      offset <span class="op">=</span> <span class="fl">8</span>,
+      magnitude <span class="op">=</span> <span class="fl">1</span>,
+      trial <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>
+    <span class="op">)</span>
+  <span class="op">)</span></code></pre></div>
+<p>We can set the reinforcements, and see how the reinforcement structure has been updated, as follows:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tdrlCond</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/rl_set_reinforcements.html">rl_set_reinforcements</a></span><span class="op">(</span>reinforcement_input <span class="op">=</span> <span class="va">reinforcements_tdrlCond</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; &lt;<span style="font-style: italic; text-decoration: underline;">tdrlConditioning</span><span style="font-style: italic;"> Simulation Agent</span>&gt;</span>
+<span class="co">#&gt; ID: <span style="color: #0000BB;">"Classical Conditioning via TDRL"</span></span>
+<span class="co">#&gt;   100 <span style="color: #00BB00;">Trials</span></span>
+<span class="co">#&gt;   10 <span style="color: #00BB00;">Episodes per Trial</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Temporal Discounting Factor</span> of 1</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Learnrate</span> of 0.3</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Reward Structure:</span> <span style="color: #00BBBB; font-weight: bold; text-decoration: underline;">✔ set</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Cue Structure:</span> <span style="color: #00BBBB; font-weight: bold; text-decoration: underline;">✔ set</span></span></code></pre></div>
+<p>With both our rewards and cues defined, we’re ready to simulate the agent!</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tdrlCond</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/rl_simulate_agent.html">rl_simulate_agent</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; &lt;<span style="font-style: italic; text-decoration: underline;">tdrlConditioning</span><span style="font-style: italic;"> Simulation Agent</span>&gt;</span>
+<span class="co">#&gt; ID: <span style="color: #0000BB;">"Classical Conditioning via TDRL"</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00; font-weight: bold;">✔ Simulations Complete</span></span>
+<span class="co">#&gt;   100 <span style="color: #00BB00;">Trials</span></span>
+<span class="co">#&gt;   10 <span style="color: #00BB00;">Episodes per Trial</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Temporal Discounting Factor</span> of 1</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Learnrate</span> of 0.3</span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Reward Structure:</span> <span style="color: #00BBBB; font-weight: bold; text-decoration: underline;">✔ set</span></span>
+<span class="co">#&gt;   <span style="color: #00BB00;">Cue Structure:</span> <span style="color: #00BBBB; font-weight: bold; text-decoration: underline;">✔ set</span></span></code></pre></div>
+<p>When printing the agent this time, we can see that simulations have been complete!<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> Now that it’s simulated, we can see how back-propagation occurs. To do that, we’ll use <code><a href="../reference/rl_get_pe_data.html">rlsims::rl_get_pe_data()</a></code> to access the prediction error data from the agent. For plotting purposes, we’ll also specify <code>add_trial_zero = TRUE</code> and <code>trial_zero_value = 0</code>. When the reinforcement is first (and unexpectedly) delivered, our agent generates a positive reward prediction error (RPE) at episode eight.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">pe_data_tdrlCond</span> <span class="op">&lt;-</span> <span class="va">tdrlCond</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/rl_get_pe_data.html">rl_get_pe_data</a></span><span class="op">(</span>add_trial_zero <span class="op">=</span> <span class="cn">TRUE</span>, trial_zero_value <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
+
+<span class="co"># Get the prediction error data from the firs trial (all episodes). This corresponds to rows 11:20, since we added a 'zero' trial for plotting.</span>
+<span class="va">pe_data_tdrlCond</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">20</span>,<span class="op">]</span>
+<span class="co">#&gt;    trial episode value</span>
+<span class="co">#&gt; 11     1       1     0</span>
+<span class="co">#&gt; 12     1       2     0</span>
+<span class="co">#&gt; 13     1       3     0</span>
+<span class="co">#&gt; 14     1       4     0</span>
+<span class="co">#&gt; 15     1       5     0</span>
+<span class="co">#&gt; 16     1       6     0</span>
+<span class="co">#&gt; 17     1       7     0</span>
+<span class="co">#&gt; 18     1       8     1</span>
+<span class="co">#&gt; 19     1       9     0</span>
+<span class="co">#&gt; 20     1      10     0</span></code></pre></div>
+<p>Over time, the RPE at episode eight will diminish, and we’ll see it occur at episode three (when the cue appears). Below is an interactive plot made with <a href="https://plotly.com/r/getting-started/" class="external-link">plotly</a>, so we visualize how the prediction errors back propagate over time (click the “Play” button!). For clarity, we wrap the code to generate it inside of a details tag, but you can expand it if you’d like!</p>
+<details closed><p><summary><span title="Click to Open"> Plot Code </span> </summary></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"></code></pre></div>
+</details><p><br></p>
+</div>
+</div>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>We plan to discuss the reasoning behind this in more detail in the future. For now, note that the cue’s offset must equal the reward’s onset.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>We found this feature helpful in tracking which agents need (or do not need) to be simulated.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
   </div>
 

@@ -37,7 +37,7 @@ pre, code {
 }
 
 pre code {
-  background-color: none;
+  background-color: transparent;
 }
 
 .page-header {

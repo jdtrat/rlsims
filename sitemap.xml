@@ -31,25 +31,46 @@
     <loc>https://rlsims.jdtrat.com/index.html</loc>
   </url>
   <url>
+    <loc>https://rlsims.jdtrat.com/reference/agent_tdrl_conditioning.html</loc>
+  </url>
+  <url>
+    <loc>https://rlsims.jdtrat.com/reference/available_agents.html</loc>
+  </url>
+  <url>
+    <loc>https://rlsims.jdtrat.com/reference/available_agents_internal.html</loc>
+  </url>
+  <url>
     <loc>https://rlsims.jdtrat.com/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_agent.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_get_pe_data.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_tidy_pe_data.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_get_pe_data.tdrlConditioning.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_new_agent.html</loc>
   </url>
   <url>
+    <loc>https://rlsims.jdtrat.com/reference/rl_new_agent.tdrlConditioning.html</loc>
+  </url>
+  <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_set_cues.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_reward.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_set_cues.tdrlConditioning.html</loc>
+  </url>
+  <url>
+    <loc>https://rlsims.jdtrat.com/reference/rl_set_reinforcements.html</loc>
+  </url>
+  <url>
+    <loc>https://rlsims.jdtrat.com/reference/rl_set_reinforcements.tdrlConditioning.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_simulate_agent.html</loc>
+  </url>
+  <url>
+    <loc>https://rlsims.jdtrat.com/reference/rl_simulate_agent.tdrlConditioning.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/simulate_prpt_iaps.html</loc>
