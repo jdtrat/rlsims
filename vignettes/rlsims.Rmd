@@ -12,7 +12,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(details)
 library(plotly)
 library(rlsims)
 ```
@@ -119,12 +118,12 @@ pe_data_tdrlCond[11:20,]
 
 ```
 
-Over time, the RPE at episode eight will diminish, and we'll see it occur at episode three (when the cue appears). Below is an interactive plot made with [plotly](https://plotly.com/r/getting-started/), so we visualize how the prediction errors back propagate over time (click the "Play" button!). For clarity, we wrap the code to generate it inside of a details tag, but you can expand it if you'd like!
+Over time, the RPE at episode eight will diminish, and we'll see it occur at episode three (when the cue appears). Below is an interactive plot made with [plotly](https://plotly.com/r/getting-started/), so we visualize how the prediction errors back propagate over time (click the "Play" button!). For clarity, we're excluding the code to generate it here, but you can find it [on GitHub](https://github.com/jdtrat/rlsims/blob/main/vignettes/rlsims.Rmd) if you'd like!
 
-```{details, echo = FALSE, details.summary = 'Plot Code'}
+```{r tdrlCond-pe-plot, echo = FALSE}
 
 pe_data_tdrlCond %>%
-plot_ly(
+  plot_ly(
     x = ~episode,
     y = ~value,
     frame = ~trial,
