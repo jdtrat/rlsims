@@ -26,9 +26,12 @@ agent_tdrl_conditioning <- R6::R6Class(
     #' @field estimated_value A three dimensional array tracking the estimated
     #' values of each episode across all trials
     estimated_value = NULL,
-    #' @field reward A matrix tracking experienced rewards in each episode
+    #' @field num_reinforcements (numeric) The number of potential reinforcements
+    #'   experienced by the RL agent.
+    num_reinforcements = NULL,
+    #' @field reinforcements A matrix tracking experienced rewards in each episode
     #'   across all trials
-    reward = NULL,
+    reinforcements = NULL,
     #' @field RPE A matrix tracking the reward prediction errors occuring in
     #   each episode across all trials
     RPE = NULL,
@@ -49,8 +52,6 @@ agent_tdrl_conditioning <- R6::R6Class(
       self$num_episodes <- num_episodes
       self$gamma <- gamma
       self$alpha <- alpha
-
-      self$reward <- zeros(dims = c(num_episodes, num_trials))
 
     },
 
@@ -85,11 +86,11 @@ agent_tdrl_conditioning <- R6::R6Class(
     },
     #' @description Define the onset episode and offset episode of rewards for
     #'   each trial
-    #' @param reinforcement_input A list containing a data frame with columns 'onset',
-    #'   'offset', 'magnitude', and 'trial' describing, respectively, the
-    #'   episode number a reward presentation begins; the episode number the
-    #'   reward presentation ends; the magnitude of the reward; the trials the
-    #'   rewards occur on.
+    #' @param reinforcement_input A list of reinforcements where each element
+    #'   contains a data frame with columns 'onset', 'offset', 'magnitude', and
+    #'   'trial' describing, respectively, the episode number a reward
+    #'   presentation begins; the episode number the reward presentation ends;
+    #'   the magnitude of the reward; the trials the rewards occur on.
     #' @param keep_reward_structure (Logical) `FALSE` (default) and any existing
     #'   reward structure will be replaced when called. `TRUE` and the reward
     #'   structure will be modified but will not remove previously defined
@@ -97,18 +98,26 @@ agent_tdrl_conditioning <- R6::R6Class(
     #'
     set_reinforcements = function(reinforcement_input, keep_reward_structure = FALSE) {
 
-      private$check_reinforcement_input(.reinforcement_input = reinforcement_input)
+      private$check_input(.input = reinforcement_input, type = "reinforcement")
+
+      self$num_reinforcements <- length(reinforcement_input)
 
       if (!keep_reward_structure) {
-        self$reward <- zeros(dims = c(self$num_episodes, self$num_trials))
+        self$reinforcements <- zeros(dims = c(self$num_reinforcements, self$num_episodes, self$num_trials))
       }
 
-      for (row in 1:nrow(reinforcement_input[[1]])) {
-        data <- reinforcement_input[[1]][row,]
+      reinforcement_data <- do.call(rbind,
+                                    lapply(seq_along(reinforcement_input), function(x) {
+                                      cbind(reinforcement_number = x, reinforcement_input[[x]])
+                                    })
+      )
+
+      for (row in 1:nrow(reinforcement_data)) {
+        data <- reinforcement_data[row,]
         if (data$onset == data$offset) {
-          self$reward[data$onset, data$trial] <- data$magnitude
+          self$reinforcements[data$reinforcement_number, data$onset, data$trial] <- data$magnitude
         } else if (data$onset < data$offset) {
-          self$reward[data$onset:data$offset, data$trial] <- data$magnitude
+          self$reinforcements[data$reinforcement_number, data$onset:data$offset, data$trial] <- data$magnitude
         }
       }
 
@@ -128,7 +137,7 @@ agent_tdrl_conditioning <- R6::R6Class(
     #'
     set_cues = function(cue_input, keep_cue_structure = FALSE) {
 
-      private$check_cue_input(.cue_input = cue_input)
+      private$check_input(.input = cue_input, type = "cue")
 
       self$num_cues <- length(cue_input)
 
@@ -178,7 +187,7 @@ agent_tdrl_conditioning <- R6::R6Class(
 
       present_cues <- self$present_cues
       estimated_value <- zeros(dims = c(num_cues, num_episodes, num_trials))
-      reward <- self$reward
+      reinforcements <- self$reinforcements
 
       # Initialize a matrix used in each trial tracking the estimated episode value associated
       # with each cue
@@ -198,9 +207,9 @@ agent_tdrl_conditioning <- R6::R6Class(
           # Actual cues become the ones experienced in a given state (and trial)
           actual_cues <- present_cues[,ep, tr]
 
-          # Define the actual experience as the reward + discounted sum of future values
+          # Define the actual experience as the reinforcements + discounted sum of future values
           # given the actual cues experienced at the current state (and trial)
-          actual <-  reward[ep, tr] + sum(gamma * cue_associated_value[,ep + 1] * actual_cues)
+          actual <-  sum(reinforcements[,ep, tr]) + sum(gamma * cue_associated_value[,ep + 1] * actual_cues)
           # Define the expected value of the current state given the current value estimate
           # and the cues expected to be experienced in this state.
           expected <- sum(cue_associated_value[,ep] * expected_cues)
@@ -278,56 +287,38 @@ agent_tdrl_conditioning <- R6::R6Class(
     }
   ),
   private = list(
-    check_cue_input = function(.cue_input) {
+    check_input = function(.input, type) {
+      arg_input <- switch(type,
+                          cue = "cue_input",
+                          reinforcement = "reinforcement_input")
 
-      all_dataframes <- vapply(.cue_input, inherits, logical(1), "data.frame")
-
-      correct_dataframe_names <- vapply(.cue_input,
+      if (!inherits(.input, "list")) cli::cli_abort("{.arg {arg_input}} must be a list of dataframes")
+      all_dataframes <- vapply(.input, inherits, logical(1), "data.frame")
+      correct_dataframe_names <- vapply(.input,
                                         function(x) all(names(x) == c("onset", "offset", "magnitude", "trial")),
                                         logical(1))
-
-      correct_dataframe_lengths <- vapply(.cue_input,
+      correct_dataframe_lengths <- vapply(.input,
                                           function(x) nrow(x) <= self$num_trials,
                                           logical(1))
-
-      onset_offset_within_bounds <- vapply(.cue_input,
+      onset_offset_within_bounds <- vapply(.input,
                                            function(x) all(x$onset <= x$offset) && all(x$offset <= self$num_episodes),
                                            logical(1))
 
       if (!all(all_dataframes) || !all(correct_dataframe_names)) {
-        cli::cli_abort("Please make sure each element of {.arg cue_input} contains a {.cls data frame} with columns named 'onset', 'offset', 'magnitude', and 'trial'.")
+        cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains a {.cls data frame} with columns named 'onset', 'offset', 'magnitude', and 'trial'.")
       }
 
 
       if (!all(correct_dataframe_lengths)) {
-        cli::cli_abort("Please make sure each element of {.arg cue_input} contains at most one onset and offset value per trial (no more than {self$num_trials}).")
+        cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains at most one onset and offset value per trial (no more than {self$num_trials}).")
       }
 
       if (!all(onset_offset_within_bounds)) {
 
-        cli::cli_abort("Please make sure each element of {.arg cue_input} contains cue onset values less than cue offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
+        cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains cue onset values less than cue offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
       }
 
-    },
-    check_reinforcement_input = function(.reinforcement_input) {
 
-      correct_input <- inherits(.reinforcement_input, "list") && all(names(.reinforcement_input[[1]]) == c("onset", "offset", "magnitude", "trial"))
-
-      correct_dataframe_length <- length(.reinforcement_input) == 1 && nrow(.reinforcement_input[[1]]) <= self$num_trials
-
-      onset_offset_within_bounds <- all(.reinforcement_input[[1]]$onset <= .reinforcement_input[[1]]$offset) && all(.reinforcement_input[[1]]$offset <= self$num_episodes)
-
-      if (!correct_input) {
-        cli::cli_abort("Please make sure {.arg reinforcement_input} is a {.cls list} with one element of class {.cls data.frame} that has columns 'onset', 'offset', 'magnitude', and 'trial'.")
-      }
-
-      if (!correct_dataframe_length) {
-        cli::cli_abort("Please make sure the {.arg reinforcement_input} data frame has at most one value per trial (no more than {self$num_trials}).")
-      }
-
-      if (!all(onset_offset_within_bounds)) {
-        cli::cli_abort("Please make sure the {.arg reinforcement_input} data frame contains onset values less than offset values and that both are less than the number of episodes per trial ({self$num_episodes})")
-      }
     },
     # Indicator for whether the reward structure was set (e.g., was the method `set_reward` called?)
     reward_structure_set = FALSE,
