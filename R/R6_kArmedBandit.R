@@ -58,7 +58,7 @@ agent_k_armed_bandit <- R6::R6Class(
     #' @param num_arms (numeric) The number of arms (options) the agent can
     #'   sample from.
     #' @param action_episode (numeric) The episode an action should be taken on.
-    #' @param reinforcement_episode (numeric) The episode reinforcements hsould
+    #' @param reinforcement_episode (numeric) The episode reinforcements should
     #'   occur on.
     #' @param gamma (numeric) The temporal discounting factor of the RL agent
     #' @param alpha (numeric) The learning rate of the RL agent
@@ -75,6 +75,13 @@ agent_k_armed_bandit <- R6::R6Class(
 
       self$gamma <- gamma
       self$alpha <- alpha
+
+      # Check the Action and Reinforcement Episode
+      private$check_action_reinforcement_episodes(
+        num_eps = num_episodes,
+        action_ep = action_episode,
+        reinforcement_ep = reinforcement_episode
+      )
 
       self$action_episode <- action_episode
       self$reinforcement_episode <- reinforcement_episode
@@ -136,7 +143,7 @@ agent_k_armed_bandit <- R6::R6Class(
                                             ... = ...)
 
       private$policy_set <- TRUE
-
+      invisible(self)
     },
     #' @description Define the arm structure for an agent
     #' @param arm_input A list of arm definitions where each element
@@ -177,7 +184,7 @@ agent_k_armed_bandit <- R6::R6Class(
     #' @description Simulate the RL Agent
     simulate_agent = function() {
 
-      if (!private$arm_structure_set) {
+      if (!private$arm_structure_set || !private$policy_set) {
         cli::cli_abort("Please set the arm structures before simulating.")
       }
 
@@ -402,7 +409,7 @@ agent_k_armed_bandit <- R6::R6Class(
                                           logical(1))
 
       if (!all(all_dataframes) || !all(correct_dataframe_names)) {
-        cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains a {.cls data frame} with columns named 'onset', 'offset', 'magnitude', and 'trial'.")
+        cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains a {.cls data frame} with columns named 'probability', 'magnitude', 'alternative', and 'trial'.")
       }
 
 
@@ -410,6 +417,19 @@ agent_k_armed_bandit <- R6::R6Class(
         cli::cli_abort("Please make sure each element of {.arg {arg_input}} contains at most one onset and offset value per trial (no more than {self$num_trials}).")
       }
 
+      if (!length(.input) == self$num_arms) {
+        cli::cli_abort("More arms supplied than allocated. Update agent object's {.arg num_arms = {self$num_arms}} or remove an arm.")
+      }
+
+    },
+    check_action_reinforcement_episodes = function(num_eps, action_ep, reinforcement_ep) {
+      if (action_ep >= num_eps || reinforcement_ep >= num_eps) {
+        cli::cli_abort("{.arg action_episode} and {.arg reinforcement_episode} must be less than the terminal episode {.arg num_episodes} ({num_eps})")
+      }
+
+      if (action_ep >= reinforcement_ep) {
+        cli::cli_abort("{.arg action_episode} must occur before the {.arg reinforcement_episode}")
+      }
     },
     # Return the parsed, but unevaluated function to simulate an action given the policy
     rl_action_simulate_function = function() {

@@ -106,7 +106,7 @@ sample from.}
 
 \item{\code{action_episode}}{(numeric) The episode an action should be taken on.}
 
-\item{\code{reinforcement_episode}}{(numeric) The episode reinforcements hsould
+\item{\code{reinforcement_episode}}{(numeric) The episode reinforcements should
 occur on.}
 
 \item{\code{gamma}}{(numeric) The temporal discounting factor of the RL agent}
