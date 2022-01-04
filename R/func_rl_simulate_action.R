@@ -13,12 +13,11 @@
 #' @return A number representing which action will be taken given the chosen policy.
 #' @export
 #'
-#' @examples
-rl_simulate_action <- function(policy, values, ...) {
+rl_action_simulate <- function(policy, values, ...) {
 
   class(policy) <- c("character", policy)
 
-  UseMethod("rl_simulate_action", object = policy)
+  UseMethod("rl_action_simulate", object = policy)
 
 }
 
@@ -37,7 +36,7 @@ rl_simulate_action <- function(policy, values, ...) {
 #' @param tau A choice temperature (greater than zero) parameter defining the
 #'   exploration versus exploitation trade-off where higher tau (temperature)
 #'   values lead to more uncertain choice distributions (more exploration) and
-#'   lower tau (temperature) values lead to more certain chocie distributions
+#'   lower tau (temperature) values lead to more certain choice distributions
 #'   (more exploitation).
 #' @param ... Additional arguments passed to or from other methods.
 #'
@@ -45,7 +44,23 @@ rl_simulate_action <- function(policy, values, ...) {
 #' @export
 #'
 #' @examples
-rl_simulate_action.softmax <- function(policy = "softmax", values, tau, ...) {
+#'
+#' # The smaller the tau, the less exploration
+#' cold <- numeric(100)
+#' for (trial in seq_along(cold)) {
+#'   cold[trial] <- rl_action_simulate(policy = "softmax", values = c(0.2, 0.25, 0.15, 0.8), tau = 0.2)
+#' }
+#' # Choice 4 (0.8 is most optimal option) so we see it chosen most
+#' sum(cold == 4)
+#'
+#' hot <- numeric(100)
+#' for (trial in seq_along(hot)) {
+#'   hot[trial] <- rl_action_simulate(policy = "softmax", values = c(0.2, 0.25, 0.15, 0.8), tau = 5)
+#' }
+#' # Choice 4 (0.8 is most optimal option) but we see more exploration here
+#' sum(hot == 4)
+#'
+rl_action_simulate.softmax <- function(policy = "softmax", values, tau, ...) {
 
   rand <- runif(1, min = 0, max = 1)
   probs <- exp(values / tau) / sum(exp(values / tau))
@@ -75,8 +90,21 @@ rl_simulate_action.softmax <- function(policy = "softmax", values, tau, ...) {
 #' @export
 #'
 #' @examples
-rl_simulate_action.greedy <- function(policy = "greedy", values, ...) {
-  which(values == max(values))
+#'
+#' action <- numeric(100)
+#' for (trial in seq_along(choice)) {
+#'   action[trial] <- rl_action_simulate(policy = "greedy", values = c(0.2, 0.25, 0.15, 0.8))
+#' }
+#'
+#' # All of the actions were to choose the highest value option
+#' all(action == 4)
+#'
+rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
+  if (all(diff(values) == 0)) {
+    round(runif(1, min = 1, max = length(values)))
+  } else {
+    which.max(values)
+  }
 }
 
 #' Simulate an Action with a 'Epsilon-Greedy' Choice Policy
@@ -100,7 +128,24 @@ rl_simulate_action.greedy <- function(policy = "greedy", values, ...) {
 #' @export
 #'
 #' @examples
-rl_simulate_action.epsilonGreedy <- function(policy = "epsilonGreedy", values, epsilon, ...) {
+#'
+#' # The lower the epsilon, the less exploration
+#' exploit <- numeric(100)
+#' for (trial in seq_along(choice)) {
+#'   exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.1)
+#' }
+#' # Choice 4 (0.8 is most optimal option) and we see it is selected the most
+#' sum(exploit == 4)
+#'
+#' # The higher the epsilon, the more exploration
+#' explore <- numeric(100)
+#' for (trial in seq_along(choice)) {
+#'   explore[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.8)
+#' }
+#' # Choice 4 (0.8 is most optimal option) but we see more exploration here
+#' sum(explore == 4)
+
+rl_action_simulate.epsilonGreedy <- function(policy = "epsilonGreedy", values, epsilon, ...) {
 
   if (epsilon < 0 || epsilon > 1) cli::cli_abort("{.arg epsilon} must be between zero and one.")
 

@@ -247,6 +247,64 @@ agent_tdrl_conditioning <- R6::R6Class(
       invisible(self)
 
     },
+    #' @description Convert the agent's estimated values array where, for each
+    #'   cue, there is a matrix where each row is an episode and each column
+    #'   is a trial that contains the estimated value, to a dataframe with columns
+    #'   'trial', 'episode', 'cue', and 'value'.
+    #'
+    #' @param add_trial_zero (Logical) `TRUE` by default and trial zero will be
+    #'   appended to the prediction error data frame with values from
+    #'   `trial_zero_value`. `FALSE` and output will begin at trial one.
+    #' @param trial_zero_value (Numeric) Either a single value (default is 0) or
+    #'   a vector of values with length `num_arms` times `num_episodes` to
+    #'   append for trial 0.
+    #' @return A dataframe with the agent's simulated learned values ('value')
+    #'   a given cue corresponds to for each episode across all trials.
+    get_learned_values = function(add_trial_zero = TRUE, trial_zero_value = 0) {
+
+      if (!private$simulated) {
+        cli::cli_abort("Cannot access learned values data. Please double check the simulations occurred.")
+      }
+      # Essentially a nested for loop but with lapply
+      # saying for (ac in seq_len(num_cues)) {
+      # for (tr in seq_len(num_trials)) {
+      # create data frame with trial, episode, cue and the associated value
+      # }
+      # }
+      out <- do.call(rbind,
+                     lapply(seq_len(self$num_cues), function(c) {
+                       do.call(rbind,
+                               lapply(seq_len(self$num_trials),
+                                      function(tr) {
+                                        data.frame(
+                                          trial = round(tr),
+                                          episode = seq_len(self$num_episodes),
+                                          cue = c,
+                                          value = self$estimated_value[c,,tr]
+                                        )
+                                      }
+                               )
+                       )
+                     }
+                     )
+      )
+
+      if (add_trial_zero) {
+        out <- rbind(
+          expand.grid(trial = 0,
+                      episode = seq_len(self$num_episodes),
+                      cue = seq_len(self$num_cues),
+                      value = trial_zero_value
+          ),
+          out
+        )
+      }
+
+      # Order the output by trial
+      out <- out[order(out$trial),,drop = FALSE]
+      rownames(out) <- NULL
+      return(out)
+    },
     #' @description Convert the agent's simulated reward prediction errors from
     #'   a matrix where each row is an episode and each column is a trial to a
     #'   dataframe with columns 'trial', 'episode', and 'value'.
