@@ -123,7 +123,7 @@ agent_k_armed_bandit <- R6::R6Class(
           if (self$policy$type == "greedy") {
             cli::cli_ul("Parameter: {.val Not Applicable}")
           } else {
-            cli::cli_ul("Parameter: {.arg {names(self$policy[2])}} = {.val {self$policy[[2]]}}")
+            cli::cli_ul("Parameter: {.arg {names(self$policy[2])}} = {.val {round(self$policy[[2]], 3)}}")
           }
           cli::cli_end(id = "policy-details")
         }
