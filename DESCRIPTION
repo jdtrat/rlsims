@@ -41,7 +41,8 @@ Suggests:
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
-    plotly
+    plotly,
+    ggplot2
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)
