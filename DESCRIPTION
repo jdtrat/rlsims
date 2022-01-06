@@ -31,17 +31,19 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1.9000
+RoxygenNote: 7.1.2
 Imports: 
     cli,
     crayon,
     purrr,
-    R6
+    R6,
+    stats
 Suggests: 
     rmarkdown,
     knitr,
     testthat (>= 3.0.0),
-    plotly
+    plotly,
+    ggplot2
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)

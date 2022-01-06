@@ -56,3 +56,41 @@ rl_new_agent.tdrlConditioning <- function(model_type, model_id,
                               gamma = gamma,
                               alpha = alpha)
 }
+
+#' Initialize a 'tdrlConditioning' Agent
+#'
+#' @description Create a new `kArmedBandit` Agent
+#'
+#' @param model_type What type of RL Agent would you like to create? One of
+#'   \code{\link{available_agents}}.
+#' @param model_id model_id (character) A model identifier referencing the
+#'   reinforcement learning paradigm to perform the simulation.
+#' @param num_trials (numeric) The number of trials to simulate.
+#' @param num_episodes (numeric) The number of episodes per trial.
+#' @param num_arms (numeric) The number of arms (options) the agent can sample
+#'   from.
+#' @param action_episode (numeric) The episode an action should be taken on.
+#' @param reinforcement_episode (numeric) The episode reinforcements hsould
+#'   occur on.
+#' @param gamma (numeric) The temporal discounting factor of the RL agent
+#' @param alpha (numeric) The learning rate of the RL agent
+#' @param ... Additional arguments passed to or from other methods.
+#'
+#' @export
+#'
+rl_new_agent.kArmedBandit <- function(model_type, model_id,
+                                          num_trials, num_episodes, num_arms,
+                                          action_episode, reinforcement_episode,
+                                          gamma, alpha, ...) {
+
+  agent_k_armed_bandit$new(model_id = model_id,
+                           num_trials = num_trials,
+                           num_episodes = num_episodes,
+                           num_arms = num_arms,
+                           action_episode = action_episode,
+                           reinforcement_episode = reinforcement_episode,
+                           gamma = gamma,
+                           alpha = alpha)
+}
+
+

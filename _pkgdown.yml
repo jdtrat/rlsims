@@ -45,6 +45,8 @@ navbar:
       menu:
         - text: "Case Study: Montague et al. 1996"
           href: articles/simulating-montague_1996.html
+        - text: "k-Armed Bandits"
+          href: articles/k-armed-bandit.html
     reference:
       text: Reference
       href: reference/index.html

@@ -30,3 +30,16 @@ rl_simulate_agent <- function(agent, ...) {
 rl_simulate_agent.tdrlConditioning <- function(agent, ...) {
   agent$simulate_agent()
 }
+
+#' Simulate the 'kArmedBandit' Agent
+#'
+#' @param agent An object of class "rlAgent" created with
+#'   \code{\link{rl_new_agent}}.
+#' @param ... Additional arguments passed to or from other methods.
+#'
+#' @return The agent object with the completed simulations.
+#' @export
+#'
+rl_simulate_agent.kArmedBandit <- function(agent, ...) {
+  agent$simulate_agent()
+}
