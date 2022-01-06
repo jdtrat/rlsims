@@ -43,6 +43,9 @@
   <ul class="dropdown-menu" role="menu"><li>
       <a href="../articles/simulating-montague_1996.html">Case Study: Montague et al. 1996</a>
     </li>
+    <li>
+      <a href="../articles/k-armed-bandit.html">k-Armed Bandits</a>
+    </li>
   </ul></li>
         <li>
   <a href="../reference/index.html">Reference</a>
@@ -91,9 +94,53 @@
         </td>
         <td><p>List Available RL Agents</p></td>
       </tr><tr><td>
+          <p><code><a href="rl_action_simulate.html">rl_action_simulate()</a></code> </p>
+        </td>
+        <td><p>Simulate an RL Agent's Action</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_action_simulate.epsilonGreedy.html">rl_action_simulate(<i>&lt;epsilonGreedy&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Simulate an Action with a 'Epsilon-Greedy' Choice Policy</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_action_simulate.greedy.html">rl_action_simulate(<i>&lt;greedy&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Simulate an Action with a 'Greedy' Choice Policy</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_action_simulate.softmax.html">rl_action_simulate(<i>&lt;softmax&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Simulate an Action with a 'Softmax' Choice Policy</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_arms_define.html">rl_arms_define()</a></code> </p>
+        </td>
+        <td><p>Define an RL Arm</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_arms_get_outcome.html">rl_arms_get_outcome()</a></code> </p>
+        </td>
+        <td><p>Get Arm's Outcome based on its Probability and Reward Structure</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_arms_get_structure.html">rl_arms_get_structure()</a></code> </p>
+        </td>
+        <td><p>Retrieve the List of Arm Definitions</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_get_learned_values.html">rl_get_learned_values()</a></code> </p>
+        </td>
+        <td><p>Get RL Agent's Simulated Learned Values</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_get_learned_values.kArmedBandit.html">rl_get_learned_values(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get 'kArmedBandit' Agent's Learned Value Data</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_get_learned_values.tdrlConditioning.html">rl_get_learned_values(<i>&lt;tdrlConditioning&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get 'tdrlConditioning' Agent's Learned Value Data</p></td>
+      </tr><tr><td>
           <p><code><a href="rl_get_pe_data.html">rl_get_pe_data()</a></code> </p>
         </td>
         <td><p>Get RL Agent's Simulated Prediction Errors</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_get_pe_data.kArmedBandit.html">rl_get_pe_data(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get 'kArmedBandit' Agent's Prediction Error Data</p></td>
       </tr><tr><td>
           <p><code><a href="rl_get_pe_data.tdrlConditioning.html">rl_get_pe_data(<i>&lt;tdrlConditioning&gt;</i>)</a></code> </p>
         </td>
@@ -103,9 +150,21 @@
         </td>
         <td><p>Initialize a Reinforcement Learning Agent</p></td>
       </tr><tr><td>
+          <p><code><a href="rl_new_agent.kArmedBandit.html">rl_new_agent(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Initialize a 'tdrlConditioning' Agent</p></td>
+      </tr><tr><td>
           <p><code><a href="rl_new_agent.tdrlConditioning.html">rl_new_agent(<i>&lt;tdrlConditioning&gt;</i>)</a></code> </p>
         </td>
         <td><p>Initialize a 'tdrlConditioning' Agent</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_set_arms.html">rl_set_arms()</a></code> </p>
+        </td>
+        <td><p>Setup an agent's Arm Structure</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_set_arms.kArmedBandit.html">rl_set_arms(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Set the Arm Structure for 'kArmedBandit' Agent</p></td>
       </tr><tr><td>
           <p><code><a href="rl_set_cues.html">rl_set_cues()</a></code> </p>
         </td>
@@ -114,6 +173,14 @@
           <p><code><a href="rl_set_cues.tdrlConditioning.html">rl_set_cues(<i>&lt;tdrlConditioning&gt;</i>)</a></code> </p>
         </td>
         <td><p>Set the Cue Structure for 'tdrlConditioning' Agent</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_set_policy.html">rl_set_policy()</a></code> </p>
+        </td>
+        <td><p>Setup an agent's Action-Selection Policy</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_set_policy.kArmedBandit.html">rl_set_policy(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Set the Action-Selection Policy for a 'kArmedBandit' Agent</p></td>
       </tr><tr><td>
           <p><code><a href="rl_set_reinforcements.html">rl_set_reinforcements()</a></code> </p>
         </td>
@@ -126,6 +193,10 @@
           <p><code><a href="rl_simulate_agent.html">rl_simulate_agent()</a></code> </p>
         </td>
         <td><p>Simulate the RL Agent</p></td>
+      </tr><tr><td>
+          <p><code><a href="rl_simulate_agent.kArmedBandit.html">rl_simulate_agent(<i>&lt;kArmedBandit&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Simulate the 'kArmedBandit' Agent</p></td>
       </tr><tr><td>
           <p><code><a href="rl_simulate_agent.tdrlConditioning.html">rl_simulate_agent(<i>&lt;tdrlConditioning&gt;</i>)</a></code> </p>
         </td>
