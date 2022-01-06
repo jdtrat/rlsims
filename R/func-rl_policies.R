@@ -27,7 +27,7 @@ rl_set_policy_internal <- function(policy, ...) {
       params[[names(params)]]
     )
     # Set and return names
-    setNames(policy, c("type", names(params)))
+    stats::setNames(policy, c("type", names(params)))
   }
 
 }

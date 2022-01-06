@@ -25,7 +25,7 @@ mean whichever action has the highest expected value will be taken.
 \examples{
 
 action <- numeric(100)
-for (trial in seq_along(choice)) {
+for (trial in seq_along(action)) {
   action[trial] <- rl_action_simulate(policy = "greedy", values = c(0.2, 0.25, 0.15, 0.8))
 }
 

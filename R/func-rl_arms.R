@@ -128,5 +128,5 @@ rl_arms_define <- function(probability, magnitude, alternative, trial) {
 #'
 rl_arms_get_outcome <- function(arm_definitions, action, trial) {
   arm <- arm_definitions[[action]][trial,]
-  if (runif(1, min = 0, max = 1) <= arm$prob) arm$magnitude else arm$alternative
+  if (stats::runif(1, min = 0, max = 1) <= arm$prob) arm$magnitude else arm$alternative
 }

@@ -62,7 +62,7 @@ rl_action_simulate <- function(policy, values, ...) {
 #'
 rl_action_simulate.softmax <- function(policy = "softmax", values, tau, ...) {
 
-  rand <- runif(1, min = 0, max = 1)
+  rand <- stats::runif(1, min = 0, max = 1)
   probs <- exp(values / tau) / sum(exp(values / tau))
 
   if (any(vapply(probs, is.na, logical(1)))) cli::cli_abort("{.arg tau} must be greater than {.val {tau}}.")
@@ -92,7 +92,7 @@ rl_action_simulate.softmax <- function(policy = "softmax", values, tau, ...) {
 #' @examples
 #'
 #' action <- numeric(100)
-#' for (trial in seq_along(choice)) {
+#' for (trial in seq_along(action)) {
 #'   action[trial] <- rl_action_simulate(policy = "greedy", values = c(0.2, 0.25, 0.15, 0.8))
 #' }
 #'
@@ -101,7 +101,7 @@ rl_action_simulate.softmax <- function(policy = "softmax", values, tau, ...) {
 #'
 rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
   if (all(diff(values) == 0)) {
-    round(runif(1, min = 1, max = length(values)))
+    round(stats::runif(1, min = 1, max = length(values)))
   } else {
     which.max(values)
   }
@@ -131,7 +131,7 @@ rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
 #'
 #' # The lower the epsilon, the less exploration
 #' exploit <- numeric(100)
-#' for (trial in seq_along(choice)) {
+#' for (trial in seq_along(exploit)) {
 #'   exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.1)
 #' }
 #' # Choice 4 (0.8 is most optimal option) and we see it is selected the most
@@ -139,7 +139,7 @@ rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
 #'
 #' # The higher the epsilon, the more exploration
 #' explore <- numeric(100)
-#' for (trial in seq_along(choice)) {
+#' for (trial in seq_along(exploit)) {
 #'   explore[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.8)
 #' }
 #' # Choice 4 (0.8 is most optimal option) but we see more exploration here
@@ -149,12 +149,12 @@ rl_action_simulate.epsilonGreedy <- function(policy = "epsilonGreedy", values, e
 
   if (epsilon < 0 || epsilon > 1) cli::cli_abort("{.arg epsilon} must be between zero and one.")
 
-  rand <- runif(1, min = 0, max = 1)
+  rand <- stats::runif(1, min = 0, max = 1)
 
   if (rand > epsilon) {
     which(values == max(values))
   } else {
-    round(runif(1, min = 1, max = length(values)))
+    round(stats::runif(1, min = 1, max = length(values)))
   }
 
 }

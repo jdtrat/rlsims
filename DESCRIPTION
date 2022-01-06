@@ -36,7 +36,8 @@ Imports:
     cli,
     crayon,
     purrr,
-    R6
+    R6,
+    stats
 Suggests: 
     rmarkdown,
     knitr,
