@@ -48,14 +48,18 @@ rl_action_simulate <- function(policy, values, ...) {
 #' # The smaller the tau, the less exploration
 #' cold <- numeric(100)
 #' for (trial in seq_along(cold)) {
-#'   cold[trial] <- rl_action_simulate(policy = "softmax", values = c(0.2, 0.25, 0.15, 0.8), tau = 0.2)
+#'   cold[trial] <- rl_action_simulate(policy = "softmax",
+#'                                     values = c(0.2, 0.25, 0.15, 0.8),
+#'                                     tau = 0.2)
 #' }
 #' # Choice 4 (0.8 is most optimal option) so we see it chosen most
 #' sum(cold == 4)
 #'
 #' hot <- numeric(100)
 #' for (trial in seq_along(hot)) {
-#'   hot[trial] <- rl_action_simulate(policy = "softmax", values = c(0.2, 0.25, 0.15, 0.8), tau = 5)
+#'   hot[trial] <- rl_action_simulate(policy = "softmax",
+#'                                    values = c(0.2, 0.25, 0.15, 0.8),
+#'                                    tau = 5)
 #' }
 #' # Choice 4 (0.8 is most optimal option) but we see more exploration here
 #' sum(hot == 4)
@@ -93,7 +97,8 @@ rl_action_simulate.softmax <- function(policy = "softmax", values, tau, ...) {
 #'
 #' action <- numeric(100)
 #' for (trial in seq_along(action)) {
-#'   action[trial] <- rl_action_simulate(policy = "greedy", values = c(0.2, 0.25, 0.15, 0.8))
+#'  action[trial] <- rl_action_simulate(policy = "greedy",
+#'                                     values = c(0.2, 0.25, 0.15, 0.8))
 #' }
 #'
 #' # All of the actions were to choose the highest value option
@@ -132,7 +137,9 @@ rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
 #' # The lower the epsilon, the less exploration
 #' exploit <- numeric(100)
 #' for (trial in seq_along(exploit)) {
-#'   exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.1)
+#'   exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy",
+#'                                        values = c(0.2, 0.25, 0.15, 0.8),
+#'                                        epsilon = 0.1)
 #' }
 #' # Choice 4 (0.8 is most optimal option) and we see it is selected the most
 #' sum(exploit == 4)
@@ -140,7 +147,9 @@ rl_action_simulate.greedy <- function(policy = "greedy", values, ...) {
 #' # The higher the epsilon, the more exploration
 #' explore <- numeric(100)
 #' for (trial in seq_along(exploit)) {
-#'   explore[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.8)
+#'   explore[trial] <- rl_action_simulate(policy = "epsilonGreedy",
+#'                                        values = c(0.2, 0.25, 0.15, 0.8),
+#'                                        epsilon = 0.8)
 #' }
 #' # Choice 4 (0.8 is most optimal option) but we see more exploration here
 #' sum(explore == 4)

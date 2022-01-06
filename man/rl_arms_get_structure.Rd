@@ -16,7 +16,3 @@ of arms defined with \code{\link{rl_set_arms}}; otherwise nothing.
 \description{
 Retrieve the List of Arm Definitions
 }
-\examples{
-
-
-}

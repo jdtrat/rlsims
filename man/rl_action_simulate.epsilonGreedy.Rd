@@ -35,7 +35,9 @@ value).
 # The lower the epsilon, the less exploration
 exploit <- numeric(100)
 for (trial in seq_along(exploit)) {
-  exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.1)
+  exploit[trial] <- rl_action_simulate(policy = "epsilonGreedy",
+                                       values = c(0.2, 0.25, 0.15, 0.8),
+                                       epsilon = 0.1)
 }
 # Choice 4 (0.8 is most optimal option) and we see it is selected the most
 sum(exploit == 4)
@@ -43,7 +45,9 @@ sum(exploit == 4)
 # The higher the epsilon, the more exploration
 explore <- numeric(100)
 for (trial in seq_along(exploit)) {
-  explore[trial] <- rl_action_simulate(policy = "epsilonGreedy", values = c(0.2, 0.25, 0.15, 0.8), epsilon = 0.8)
+  explore[trial] <- rl_action_simulate(policy = "epsilonGreedy",
+                                       values = c(0.2, 0.25, 0.15, 0.8),
+                                       epsilon = 0.8)
 }
 # Choice 4 (0.8 is most optimal option) but we see more exploration here
 sum(explore == 4)

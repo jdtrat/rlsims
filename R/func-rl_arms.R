@@ -51,8 +51,6 @@ rl_set_arms.kArmedBandit <- function(agent, arm_input, keep_arm_structure = FALS
 #'   of arms defined with \code{\link{rl_set_arms}}; otherwise nothing.
 #' @export
 #'
-#' @examples
-#'
 #'
 rl_arms_get_structure <- function(agent) {
   agent$get_arms()
