@@ -85,8 +85,8 @@ denOudenArms <- list(
     alternative = 0,
     trial = 1:80
   ),
-  blue = data.frame(
-    probability = c(rep(0.3, 40), rep(0.4, 40)),
+  yellow = data.frame(
+    probability = c(rep(0.3, 40), rep(0.7, 40)),
     magnitude = 1,
     alternative = 0,
     trial = 1:80
