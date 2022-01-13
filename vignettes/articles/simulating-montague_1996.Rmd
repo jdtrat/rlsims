@@ -32,7 +32,7 @@ Figure 6 demonstrates how the TDRL algorithm performs in a simulation of a delay
 
 > An initial sensory cue is presented at episode 60 with a second sensory cue presented randomly between 9 and 11 episodes later. A reward is presented at episode 80, lasting for one episode. Learning rate is 0.05.
 
-To construct a simulation agent with these constraints, we need to create a new agent with `rl_new_agent()`. We set the `model_type = "tdrl"`, set `num_trials = 500` and `num_episodes = 100`, as described above. Since the delayed spatial choice task has two sensory cues, we define that with `num_cues = 2`. The temporal discounting factor, $0 \leq \gamma \leq 1$, is assumed to be one, so we set `gamma = 1`. Similarly, the learning rate, $\alpha$, was defined as 0.05, so we set `alpha = 0.05`.
+To construct a simulation agent with these constraints, we need to create a new agent with `rl_new_agent()`. We set the `model_type = "tdrl"`, set `num_trials = 500` and `num_episodes = 100`, as described above. The temporal discounting factor, $0 \leq \gamma \leq 1$, is assumed to be one, so we set `gamma = 1`. Similarly, the learning rate, $\alpha$, was defined as 0.05, so we set `alpha = 0.05`.
 
 ```{r agent-6a}
 

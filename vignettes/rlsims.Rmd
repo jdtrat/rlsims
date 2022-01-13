@@ -30,7 +30,7 @@ To simulate an RL agent on a specific task/environment, you need to create a spe
 
 > Over 100 trials, each with ten distinct timesteps or 'episodes', we presented a stimulus on the third episode which was always followed by a reward at the eighth episode.
 
-We can model this with TDRL by creating an RL Agent of type 'tdrlConditioning'. First, we specify `model_type = "tdrlConditioning"` to ensure all methods are applied for the desired algorithm. The argument `model_id` is simply a description that can be useful for distinguishing between multiple agents simulated in the same R session. As described above, we are simulating over 100 trials, each of which has ten episodes. We're arbitrarily setting the temporal discounting factor, $0 \leq \gamma \leq 1$, to simplify the algorithm (`gamma = 1`). Similarly, we'll set learning rate, $\alpha$, as 0.3 (`alpha = 0.05`).
+We can model this with TDRL by creating an RL Agent of type 'tdrlConditioning'. First, we specify `model_type = "tdrlConditioning"` to ensure all methods are applied for the desired algorithm. The argument `model_id` is simply a description that can be useful for distinguishing between multiple agents simulated in the same R session. As described above, we are simulating over 100 trials, each of which has ten episodes. We're arbitrarily setting the temporal discounting factor, $0 \leq \gamma \leq 1$, to simplify the algorithm (`gamma = 1`). Similarly, we'll set learning rate, $\alpha$, as 0.3 (`alpha = 0.3`).
  
 ```{r tdrlCond-define}
 
@@ -48,9 +48,9 @@ RL Agent objects have special printing properties, describing meta information f
 tdrlCond
 ```
 
-Note that, although we've defined the number of trials and episodes, we haven't specified the timing of the cues or the reward. To do that, we will use the functions `rl_set_reinforcements()` and `rl_set_cues()`. Both functions take a list with a `data.frame` that has columns 'onset', 'offset', 'magnitude', and 'trial'. 'onset' describes the episode number the reinforcement and cue first appear, and the offset specifies the episode number their presentation should terminate. 'magnitude' dictates the saliency and value of the cue and reinforcement, respectively. 'trial' defines on which trials cues and reinforcements defined in the onset/offset/magnitude columns occur.
+Note that, although we've defined the number of trials and episodes, we haven't specified the timing of the cues or the reward. To do that, we will use the functions `rl_set_reinforcements()` and `rl_set_cues()`. Both functions take a list with a `data.frame` that has columns 'onset', 'offset', 'magnitude', and 'trial'. 'onset' describes the episode number the reinforcement and cue first appear, and the offset specifies the episode number their presentation should terminate. 'magnitude' dictates the saliency and value of the cue and reinforcement, respectively. 'trial' defines which trials the cues and reinforcements occur.
 
-To begin, we'll specify the cue structure where it is present (`magnitude = 1`) at episode three (`onset = 3`) on all one-hundred trials (`trial = 1:100`). The way we chose to implement the TDRL algorithm, the cue must "remain" until the reward is delivered, which we specified as the eighth episode (`offset = 8`).[^1] We construct these parameters in a data frame and wrap it in a list. Doing so allows us to generalize the TDRL algorithm for environments with multiple cues. For this example, the cue structure looks like this:
+To begin, we'll specify the cue structure where it is present (`magnitude = 1`) at episode three (`onset = 3`; inclusive) on all one-hundred trials (`trial = 1:100`). The way we chose to implement the TDRL algorithm, the cue must "remain" until the reward is delivered, which we specified as the eighth episode (`offset = 8`; exclusive).[^1] We construct these parameters in a data frame and wrap it in a list. Doing so allows us to generalize the TDRL algorithm for environments with multiple cues. For this example, the cue structure looks like this:
 
 [^1]: We plan to discuss the reasoning behind this in more detail in the future. For now, note that the cue's offset must equal the reward's onset.
 
@@ -115,7 +115,7 @@ When printing the agent this time, we can see that simulations have been complet
 pe_data_tdrlCond <- tdrlCond %>%
   rl_get_pe_data(add_trial_zero = TRUE, trial_zero_value = 0)
 
-# Get the prediction error data from the firs trial (all episodes). This corresponds to rows 11:20, since we added a 'zero' trial for plotting.
+# Get the prediction error data from the first trial (all episodes). This corresponds to rows 11:20, since we added a 'zero' trial for plotting.
 pe_data_tdrlCond[11:20,]
 
 ```
