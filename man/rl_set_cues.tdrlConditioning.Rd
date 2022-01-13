@@ -40,7 +40,8 @@ ex1 <- list(
     onset = 60,
     offset = 80,
     magnitude = c(rep(1, 250), rep(0, 250)),
-    trial = 1:500),
+    trial = 1:500
+  ),
   two = data.frame(
     onset = 70,
     offset = 80,
@@ -56,7 +57,8 @@ ex2 <- list(
     onset = 60,
     offset = 80,
     magnitude = 1,
-    trial = 1:250),
+    trial = 1:250
+  ),
   two = data.frame(
     onset = 70,
     offset = 80,
@@ -64,7 +66,4 @@ ex2 <- list(
     trial = 251:500
   )
 )
-
-
-
 }

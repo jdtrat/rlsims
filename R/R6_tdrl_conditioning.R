@@ -98,27 +98,12 @@ agent_tdrl_conditioning <- R6::R6Class(
     #'
     set_reinforcements = function(reinforcement_input, keep_reward_structure = FALSE) {
 
-      private$check_input(.input = reinforcement_input, type = "reinforcement")
-
       self$num_reinforcements <- length(reinforcement_input)
 
       if (!keep_reward_structure) {
-        self$reinforcements <- zeros(dims = c(self$num_reinforcements, self$num_episodes, self$num_trials))
-      }
-
-      reinforcement_data <- do.call(rbind,
-                                    lapply(seq_along(reinforcement_input), function(x) {
-                                      cbind(reinforcement_number = x, reinforcement_input[[x]])
-                                    })
-      )
-
-      for (row in 1:nrow(reinforcement_data)) {
-        data <- reinforcement_data[row,]
-        if (data$onset == data$offset) {
-          self$reinforcements[data$reinforcement_number, data$onset, data$trial] <- data$magnitude
-        } else if (data$onset < data$offset) {
-          self$reinforcements[data$reinforcement_number, data$onset:data$offset, data$trial] <- data$magnitude
-        }
+        self$reinforcements <- rl_define_reinforcements_array(reinforcement_input = reinforcement_input,
+                                                              num_episodes = self$num_episodes,
+                                                              num_trials = self$num_trials)
       }
 
       private$reward_structure_set <- TRUE
@@ -137,28 +122,12 @@ agent_tdrl_conditioning <- R6::R6Class(
     #'
     set_cues = function(cue_input, keep_cue_structure = FALSE) {
 
-      private$check_input(.input = cue_input, type = "cue")
-
       self$num_cues <- length(cue_input)
 
-      cue_data <- do.call(rbind,
-                          lapply(seq_along(cue_input), function(x) {
-                            cbind(cue_number = x, cue_input[[x]])
-                          })
-      )
-
       if (!keep_cue_structure) {
-        self$present_cues <- zeros(dims = c(self$num_cues, self$num_episodes, self$num_trials))
-      }
-
-
-      for (row in 1:nrow(cue_data)) {
-        data <- cue_data[row,]
-        if (data$onset == data$offset) {
-          self$present_cues[data$cue_number, data$onset, data$trial] <- data$magnitude
-        } else if (data$onset < data$offset) {
-          self$present_cues[data$cue_number, data$onset:data$offset, data$trial] <- data$magnitude
-        }
+        self$present_cues <- rl_define_cues_array(cue_input = cue_input,
+                                                  num_episodes = self$num_episodes,
+                                                  num_trials = self$num_trials)
       }
 
       private$cue_structure_set <- TRUE

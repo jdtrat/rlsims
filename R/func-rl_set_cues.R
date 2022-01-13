@@ -12,9 +12,7 @@
 #' @export
 #'
 rl_set_cues <- function(agent, ...) {
-
   UseMethod("rl_set_cues")
-
 }
 
 #' Set the Cue Structure for 'tdrlConditioning' Agent
@@ -47,7 +45,8 @@ rl_set_cues <- function(agent, ...) {
 #'     onset = 60,
 #'     offset = 80,
 #'     magnitude = c(rep(1, 250), rep(0, 250)),
-#'     trial = 1:500),
+#'     trial = 1:500
+#'   ),
 #'   two = data.frame(
 #'     onset = 70,
 #'     offset = 80,
@@ -63,7 +62,8 @@ rl_set_cues <- function(agent, ...) {
 #'     onset = 60,
 #'     offset = 80,
 #'     magnitude = 1,
-#'     trial = 1:250),
+#'     trial = 1:250
+#'   ),
 #'   two = data.frame(
 #'     onset = 70,
 #'     offset = 80,
@@ -71,14 +71,9 @@ rl_set_cues <- function(agent, ...) {
 #'     trial = 251:500
 #'   )
 #' )
-#'
-#'
-#'
 rl_set_cues.tdrlConditioning <- function(agent, cue_input, keep_cue_structure = FALSE, ...) {
-
   agent$set_cues(
     cue_input = cue_input,
     keep_cue_structure = keep_cue_structure
   )
-
 }
