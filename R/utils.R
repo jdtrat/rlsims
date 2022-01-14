@@ -70,3 +70,25 @@ available_agents_internal <- function() {
 available_agents <- function() {
   available_agents_internal()$agent_class
 }
+
+
+#' Use an RL Agent Template from rlsims Package
+#'
+#' @param name Name of the agent template to use.
+#'
+#' @return Results of [base::readLines] on the RL Agent template.
+#' @keywords internal
+#'
+#' @examples
+#' \dontrun{
+#' use_agent_template("tdrl_conditioning")
+#' }
+use_agent_template <- function(name) {
+  readLines(
+    system.file(
+      paste0("template_", name, ".R"),
+      package = "rlsims"
+    ),
+    encoding = "UTF-8"
+  )
+}

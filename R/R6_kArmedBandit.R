@@ -48,6 +48,8 @@ agent_k_armed_bandit <- R6::R6Class(
     #' @field reinforcements A matrix tracking the experienced reinforcements
     #'   associated with choosing an arm across episodes within a given trial
     reinforcements = NULL,
+    #' @field simulation_code The code for simulating the kArmedBandit
+    simulation_code = NULL,
 
     #' @description Create a new `kArmedBandit` object
     #'
@@ -163,7 +165,7 @@ agent_k_armed_bandit <- R6::R6Class(
       self$num_arms <- length(arm_input)
 
       if (!keep_arm_structure) {
-        self$arm_structure <- arm_input
+        self$arm_structure <- rlang::enquo(arm_input)
       } else if (keep_arm_structure & private$arm_structure_set) {
         cli::cli_alert_info("Arm structure already exists and {.arg keep_arm_structure = FALSE},
                             so it will not be overwritten.")
@@ -188,80 +190,21 @@ agent_k_armed_bandit <- R6::R6Class(
         cli::cli_abort("Please set the arm structures before simulating.")
       }
 
-      # Assign values for local use -- allows portability of main simulation
-      # code.
-      num_arms <- self$num_arms
-      num_trials <- self$num_trials
-      num_episodes <- self$num_episodes
+      self$simulation_code <- whisker::whisker.render(
+        use_agent_template("k_armed_bandit"),
+        data = list(num_arms = self$num_arms,
+                    num_trials = self$num_trials,
+                    num_episodes = self$num_episodes,
+                    arm_structure = rlang::expr_text(rlang::eval_tidy(self$arm_structure)),
+                    action_episode = self$action_episode,
+                    reinforcement_episode = self$reinforcement_episode,
+                    gamma = self$gamma,
+                    alpha = self$alpha,
+                    simulate_function =  private$rl_action_simulate_function()
+                    )
+      )
 
-      action_episode <- self$action_episode
-      reinforcement_episode <- self$reinforcement_episode
-
-      gamma <- self$gamma
-      alpha <- self$alpha
-
-      simulate_func <- private$rl_action_simulate_function()
-
-      # Create three dimensional arrays for saving the Q values and prediction
-      # errors from the entire task
-      Q_values <- zeros(dims = c(num_arms, num_episodes, num_trials))
-      prediction_errors <- zeros(dims = c(num_arms, num_episodes, num_trials))
-
-      # Create matrices for locally updating Q values
-      Q_val <- zeros(dims = c(num_arms, num_episodes))
-      # Create matrices for locally updating prediction errors
-      pe <- zeros(dims = c(num_arms, num_episodes))
-
-      # Create matrices for storing the experienced reinforcements
-      reinforcements <- zeros(dims = c(num_episodes, num_trials))
-
-      # Create a vector for storing the actions taken
-      actions <- numeric(length = num_trials)
-
-      # For each trial
-      for (tr in 1:num_trials) {
-        # For each episode (except the terminal one)
-        for (ep in 1:(num_episodes - 1)) {
-          # If the episode is when the action is taken, simulate an action with
-          # said policy. This is the only part of the `simulate_agent` code that
-          # is not directly applicable on its own. We have implemented some fun
-          # parsing of unevaluated expressions to simulate the correct action
-          # given the policy.
-          #
-          # As an example of simulating with a softmax decision policy, you
-          # could replace 'eval(simulate_func)' with: actions[tr] <- rl_action_simulate(policy =
-          # "softmax", values = Q_val[, ep], tau = 8)
-          if (ep == action_episode) {
-            actions[tr] <- eval(simulate_func)
-
-            reinforcements[reinforcement_episode, tr] <- rl_arms_get_outcome(arm_definitions = self$arm_structure,
-                                                                             action = actions[tr],
-                                                                             trial = tr)
-          }
-          # Define the actual experience as the reinforcement after choosing a given
-          # arm plus the discounted sum of future values given the action taken during the
-          # current state (and trial)
-          actual <-  reinforcements[ep, tr] + (gamma * Q_val[actions[tr], ep + 1])
-          # Define the expected value of the current state given the current Q value estimate
-          expected <- Q_val[actions[tr], ep]
-
-          # Prediction error for a given action on a specific episode is the
-          # difference between actual experience of selecting an arm and expected experience
-          pe[actions[tr], ep] <- actual - expected
-
-          # Update Q value estimate state given the expected value (previous estimated
-          # Q value) plus the learning rate times prediction error from having taken
-          # an action
-          Q_val[actions[tr],ep] <- expected + (alpha * pe[actions[tr], ep])
-
-          # Save running total of estimated Q value and prediction error for plotting
-          for (ac in 1:num_arms) {
-            Q_values[ac, ep, tr] <- Q_val[ac, ep]
-            prediction_errors[ac, ep, tr] <- pe[ac, ep]
-          }
-        }
-
-      }
+      eval(parse(text = self$simulation_code))
 
       # Save prediction errors, Q_values, actions, and reinforcements
       self$prediction_errors <- prediction_errors
@@ -394,6 +337,10 @@ agent_k_armed_bandit <- R6::R6Class(
       out <- out[order(out$trial),,drop = FALSE]
       rownames(out) <- NULL
       return(out)
+    },
+    #' @description Retrieve the code needed to simulate the agent.
+    get_simulation_code = function() {
+      self$simulation_code
     }
   ),
   private = list(

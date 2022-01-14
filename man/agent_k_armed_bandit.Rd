@@ -56,6 +56,8 @@ and trials}
 
 \item{\code{reinforcements}}{A matrix tracking the experienced reinforcements
 associated with choosing an arm across episodes within a given trial}
+
+\item{\code{simulation_code}}{The code for simulating the kArmedBandit}
 }
 \if{html}{\out{</div>}}
 }
@@ -70,6 +72,7 @@ associated with choosing an arm across episodes within a given trial}
 \item \href{#method-simulate_agent}{\code{agent_k_armed_bandit$simulate_agent()}}
 \item \href{#method-get_learned_values}{\code{agent_k_armed_bandit$get_learned_values()}}
 \item \href{#method-get_pe_data}{\code{agent_k_armed_bandit$get_pe_data()}}
+\item \href{#method-get_simulation_code}{\code{agent_k_armed_bandit$get_simulation_code()}}
 \item \href{#method-clone}{\code{agent_k_armed_bandit$clone()}}
 }
 }
@@ -265,6 +268,16 @@ append for trial 0.}
 A dataframe with the agent's simulated prediction errors from
 taking an action for each episode across all trials.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_simulation_code"></a>}}
+\if{latex}{\out{\hypertarget{method-get_simulation_code}{}}}
+\subsection{Method \code{get_simulation_code()}}{
+Retrieve the code needed to simulate the agent.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{agent_k_armed_bandit$get_simulation_code()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

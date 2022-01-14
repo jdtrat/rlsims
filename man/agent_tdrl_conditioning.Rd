@@ -28,10 +28,10 @@ reinforcement learning paradigm to perform the simulation.}
 
 \item{\code{num_cues}}{(numeric) The number of potential cues interacting with the RL agent.}
 
-\item{\code{present_cues}}{A three-dimensional array tacking what cues are
+\item{\code{cue_structure}}{A three-dimensional array tacking what cues are
 present in each episode across all simulated trials}
 
-\item{\code{estimated_value}}{A three dimensional array tracking the estimated
+\item{\code{estimated_values}}{A three dimensional array tracking the estimated
 values of each episode across all trials}
 
 \item{\code{num_reinforcements}}{(numeric) The number of potential reinforcements
@@ -40,7 +40,11 @@ experienced by the RL agent.}
 \item{\code{reinforcements}}{A matrix tracking experienced rewards in each episode
 across all trials}
 
-\item{\code{RPE}}{A matrix tracking the reward prediction errors occuring in}
+\item{\code{prediction_errors}}{A three dimensional array tracking the
+prediction errors associated with each arm across all episodes and
+trials}
+
+\item{\code{simulation_code}}{The code for simulating the kArmedBandit}
 }
 \if{html}{\out{</div>}}
 }
@@ -54,6 +58,7 @@ across all trials}
 \item \href{#method-simulate_agent}{\code{agent_tdrl_conditioning$simulate_agent()}}
 \item \href{#method-get_learned_values}{\code{agent_tdrl_conditioning$get_learned_values()}}
 \item \href{#method-get_pe_data}{\code{agent_tdrl_conditioning$get_pe_data()}}
+\item \href{#method-get_simulation_code}{\code{agent_tdrl_conditioning$get_simulation_code()}}
 \item \href{#method-clone}{\code{agent_tdrl_conditioning$clone()}}
 }
 }
@@ -229,6 +234,16 @@ a vector of values to append for trial 0.}
 A dataframe with the agent's simulated reward prediction errors
 ('value') for each episode across trials.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_simulation_code"></a>}}
+\if{latex}{\out{\hypertarget{method-get_simulation_code}{}}}
+\subsection{Method \code{get_simulation_code()}}{
+Retrieve the code needed to simulate the agent.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{agent_tdrl_conditioning$get_simulation_code()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

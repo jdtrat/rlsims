@@ -53,7 +53,10 @@ check_array_list_input <- function(.input, type, num_episodes, num_trials) {
 #' @keywords internal
 #' @examples
 #'
+#' \dontrun{
 #' rl_define_array_factory("reinforcement")
+#' }
+#'
 #'
 rl_define_array_factory <- function(type) {
 

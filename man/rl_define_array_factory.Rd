@@ -17,7 +17,10 @@ Factory for Defining Array Setting Functions
 }
 \examples{
 
+\dontrun{
 rl_define_array_factory("reinforcement")
+}
+
 
 }
 \keyword{internal}
