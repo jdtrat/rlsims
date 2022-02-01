@@ -34,8 +34,10 @@ RoxygenNote: 7.1.2
 Imports: 
     cli,
     crayon,
+    digest,
     purrr,
     R6,
+    rlang,
     stats,
     whisker
 Suggests: 

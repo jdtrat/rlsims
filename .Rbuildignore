@@ -8,3 +8,5 @@
 ^pkgdown$
 ^vignettes/articles$
 ^paper.*$
+^inst/dev$
+^\.httr-oauth$
