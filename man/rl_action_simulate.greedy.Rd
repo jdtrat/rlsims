@@ -26,11 +26,12 @@ mean whichever action has the highest expected value will be taken.
 
 action <- numeric(100)
 for (trial in seq_along(action)) {
- action[trial] <- rl_action_simulate(policy = "greedy",
-                                    values = c(0.2, 0.25, 0.15, 0.8))
+  action[trial] <- rl_action_simulate(
+    policy = "greedy",
+    values = c(0.2, 0.25, 0.15, 0.8)
+  )
 }
 
 # All of the actions were to choose the highest value option
 all(action == 4)
-
 }

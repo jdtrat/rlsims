@@ -23,5 +23,4 @@ zeros(dims = c(10, 2))
 
 # Create a 3-d array with 10-rows and 2-columns
 zeros(dims = c(3, 10, 2))
-
 }

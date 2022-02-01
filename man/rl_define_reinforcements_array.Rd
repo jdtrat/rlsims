@@ -38,5 +38,4 @@ rl_define_reinforcements_array(
   num_episodes = 10,
   num_trials = 100
 )
-
 }

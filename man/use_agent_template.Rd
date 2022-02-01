@@ -4,20 +4,23 @@
 \alias{use_agent_template}
 \title{Use an RL Agent Template from rlsims Package}
 \usage{
-use_agent_template(name)
+use_agent_template(name, read = TRUE)
 }
 \arguments{
 \item{name}{Name of the agent template to use.}
+
+\item{read}{Logical: Should the RL Agent template be read? Default is \code{TRUE}.}
 }
 \value{
-Results of \link[base:readLines]{base::readLines} on the RL Agent template.
+If \code{read = TRUE} (default), the results of \link[base:readLines]{base::readLines} on the
+RL Agent template; otherwise the template file path.
 }
 \description{
-Use an RL Agent Template from rlsims Package
+This function is for accessing RL Agent templates that ship with
+the rlsims package and is exported for pedagogical purposes.
 }
 \examples{
 \dontrun{
-use_agent_template("tdrl_conditioning")
+use_agent_template("td_conditioning")
 }
 }
-\keyword{internal}

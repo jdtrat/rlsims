@@ -11,7 +11,6 @@
 #' @keywords internal
 #'
 rl_set_policy_internal <- function(policy, ...) {
-
   params <- list(...)
 
   # If policy is greedy, no parameters are passed
@@ -29,7 +28,6 @@ rl_set_policy_internal <- function(policy, ...) {
     # Set and return names
     stats::setNames(policy, c("type", names(params)))
   }
-
 }
 
 
@@ -41,7 +39,6 @@ rl_set_policy_internal <- function(policy, ...) {
 #' @keywords internal
 #'
 rl_policy_check_internal <- function(x) {
-
   if (x$type == "softmax") {
     correct_arg <- "tau"
     valid <- length(x$tau) == 1 && is.numeric(x$tau) && x$tau > 0
@@ -64,27 +61,8 @@ rl_policy_check_internal <- function(x) {
   }
 }
 
-#' Setup an agent's Action-Selection Policy
+#' Define the Action-Selection Policy for an RL Agent
 #'
-#' @description This is a generic function for, when applicable, defining the
-#'   action-selection policy of an RL Agent.
-#' @param agent An RL Agent created with \code{\link{rl_new_agent}}.
-#' @param ... Additional arguments to pass into the specific RL Agent for
-#'   setting the policy.
-#' @return The agent object with modified policy structure.
-#'
-#' @export
-#'
-rl_set_policy <- function(agent, ...) {
-
-  UseMethod("rl_set_policy")
-
-}
-
-
-#' Set the Action-Selection Policy for a 'kArmedBandit' Agent
-#'
-#' @param agent  An RL Agent created with \code{\link{rl_new_agent}}.
 #' @param policy What policy should a decision be made under? Currently
 #'   supported are softmax, greedy, and epsilon-greedy.
 #' @param ... Additional arguments passed to or from specific methods, such as
@@ -103,12 +81,9 @@ rl_set_policy <- function(agent, ...) {
 #' # (policy = "epsilonGreedy", epsilon = 0.4)
 #'
 #' # (policy = "greedy")
-#'
-rl_set_policy.kArmedBandit <- function(agent, policy, ...) {
-
-  agent$set_policy(
+rl_define_policy <- function(policy, ...) {
+  rl_set_policy_internal(
     policy = policy,
     ... = ...
   )
-
 }

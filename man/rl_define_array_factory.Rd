@@ -7,20 +7,18 @@
 rl_define_array_factory(type)
 }
 \arguments{
-\item{type}{What type of array will be set? 'reinforcement' or 'cues'.}
+\item{type}{What type of array will be set? 'reinforcement' or 'stimuli'.}
 }
 \value{
-A function to be exported for defining either array or cues.
+A function to be exported for defining either array or stimuli.
 }
 \description{
 Factory for Defining Array Setting Functions
 }
 \examples{
-
 \dontrun{
 rl_define_array_factory("reinforcement")
 }
-
 
 }
 \keyword{internal}

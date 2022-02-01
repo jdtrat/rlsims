@@ -37,20 +37,23 @@ of taking the action with the highest expected value).
 # The smaller the tau, the less exploration
 cold <- numeric(100)
 for (trial in seq_along(cold)) {
-  cold[trial] <- rl_action_simulate(policy = "softmax",
-                                    values = c(0.2, 0.25, 0.15, 0.8),
-                                    tau = 0.2)
+  cold[trial] <- rl_action_simulate(
+    policy = "softmax",
+    values = c(0.2, 0.25, 0.15, 0.8),
+    tau = 0.2
+  )
 }
 # Choice 4 (0.8 is most optimal option) so we see it chosen most
 sum(cold == 4)
 
 hot <- numeric(100)
 for (trial in seq_along(hot)) {
-  hot[trial] <- rl_action_simulate(policy = "softmax",
-                                   values = c(0.2, 0.25, 0.15, 0.8),
-                                   tau = 5)
+  hot[trial] <- rl_action_simulate(
+    policy = "softmax",
+    values = c(0.2, 0.25, 0.15, 0.8),
+    tau = 5
+  )
 }
 # Choice 4 (0.8 is most optimal option) but we see more exploration here
 sum(hot == 4)
-
 }

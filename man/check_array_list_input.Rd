@@ -4,13 +4,13 @@
 \alias{check_array_list_input}
 \title{Have Input Checks for Setting Array Inputs}
 \usage{
-check_array_list_input(.input, type, num_episodes, num_trials)
+check_array_list_input(.input, type, num_episodes, num_trials, num_stimuli)
 }
 \arguments{
 \item{.input}{The input passed into one of the array definition functions
 created with \code{\link{rl_define_array_factory}}.}
 
-\item{type}{Either "cue" or "reinforcement" to tailor error messages
+\item{type}{Either "stimulus" or "reinforcement" to tailor error messages
 according to the array setting input.}
 
 \item{num_episodes}{(numeric) The number of episodes per trial.}
