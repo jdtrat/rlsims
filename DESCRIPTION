@@ -29,15 +29,17 @@ Description: Provides a standardized, user-friendly interface for simulating
     reinforcement learning agents in R.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
     cli,
     crayon,
+    digest,
     purrr,
     R6,
-    stats
+    rlang,
+    stats,
+    whisker
 Suggests: 
     rmarkdown,
     knitr,
