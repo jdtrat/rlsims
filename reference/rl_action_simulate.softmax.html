@@ -130,24 +130,27 @@ lower tau (temperature) values lead to more certain choice distributions
 <span class="r-in"><span class="co"># The smaller the tau, the less exploration</span></span>
 <span class="r-in"><span class="va">cold</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
 <span class="r-in"><span class="kw">for</span> <span class="op">(</span><span class="va">trial</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">cold</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">cold</span><span class="op">[</span><span class="va">trial</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="rl_action_simulate.html">rl_action_simulate</a></span><span class="op">(</span>policy <span class="op">=</span> <span class="st">"softmax"</span>,</span>
-<span class="r-in">                                    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
-<span class="r-in">                                    tau <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span class="r-in">  <span class="va">cold</span><span class="op">[</span><span class="va">trial</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="rl_action_simulate.html">rl_action_simulate</a></span><span class="op">(</span></span>
+<span class="r-in">    policy <span class="op">=</span> <span class="st">"softmax"</span>,</span>
+<span class="r-in">    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
+<span class="r-in">    tau <span class="op">=</span> <span class="fl">0.2</span></span>
+<span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-in"><span class="co"># Choice 4 (0.8 is most optimal option) so we see it chosen most</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cold</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 89</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 95</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">hot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
 <span class="r-in"><span class="kw">for</span> <span class="op">(</span><span class="va">trial</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">hot</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">hot</span><span class="op">[</span><span class="va">trial</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="rl_action_simulate.html">rl_action_simulate</a></span><span class="op">(</span>policy <span class="op">=</span> <span class="st">"softmax"</span>,</span>
-<span class="r-in">                                   values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
-<span class="r-in">                                   tau <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span class="r-in">  <span class="va">hot</span><span class="op">[</span><span class="va">trial</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="rl_action_simulate.html">rl_action_simulate</a></span><span class="op">(</span></span>
+<span class="r-in">    policy <span class="op">=</span> <span class="st">"softmax"</span>,</span>
+<span class="r-in">    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.25</span>, <span class="fl">0.15</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
+<span class="r-in">    tau <span class="op">=</span> <span class="fl">5</span></span>
+<span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-in"><span class="co"># Choice 4 (0.8 is most optimal option) but we see more exploration here</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">hot</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 27</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 37</span>
 </code></pre></div>
     </div>
   </div>
@@ -158,7 +161,7 @@ lower tau (temperature) values lead to more certain choice distributions
 
 
       <footer><div class="author">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

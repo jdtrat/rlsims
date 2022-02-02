@@ -34,19 +34,13 @@
     <loc>https://rlsims.jdtrat.com/index.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/agent_k_armed_bandit.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/check_action_reinforcement_episodes.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/agent_q_learning.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/check_arm_input.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/agent_tdrl_conditioning.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/available_agents.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/available_agents_internal.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/check_array_list_input.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/index.html</loc>
@@ -64,82 +58,34 @@
     <loc>https://rlsims.jdtrat.com/reference/rl_action_simulate.softmax.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_arms_define.html</loc>
-  </url>
-  <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_arms_get_outcome.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_arms_get_structure.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_arms.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_learned_values.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_array_factory.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_learned_values.kArmedBandit.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_new_agent.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_learned_values.tdrlConditioning.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_policy.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_pe_data.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_reinforcements_array.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_pe_data.kArmedBandit.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_get_pe_data.tdrlConditioning.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_new_agent.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_new_agent.kArmedBandit.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_new_agent.tdrlConditioning.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/rl_define_stimuli_array.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_policy_check_internal.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_arms.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_arms.kArmedBandit.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_cues.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_cues.tdrlConditioning.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_policy.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_policy.kArmedBandit.html</loc>
-  </url>
-  <url>
     <loc>https://rlsims.jdtrat.com/reference/rl_set_policy_internal.html</loc>
   </url>
   <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_reinforcements.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_set_reinforcements.tdrlConditioning.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_simulate_agent.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_simulate_agent.kArmedBandit.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/rl_simulate_agent.tdrlConditioning.html</loc>
-  </url>
-  <url>
-    <loc>https://rlsims.jdtrat.com/reference/simulate_prpt_iaps.html</loc>
+    <loc>https://rlsims.jdtrat.com/reference/use_agent_template.html</loc>
   </url>
   <url>
     <loc>https://rlsims.jdtrat.com/reference/zeros.html</loc>

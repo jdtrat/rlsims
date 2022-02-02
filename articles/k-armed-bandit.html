@@ -122,9 +122,9 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">rlsims</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></code></pre></div>
-<div class="section level1">
-<h1 id="introduction-to-k-armed-bandits">Introduction to <span class="math inline">\(K\)</span>-Armed Bandits<a class="anchor" aria-label="anchor" href="#introduction-to-k-armed-bandits"></a>
-</h1>
+<div class="section level2">
+<h2 id="introduction-to-k-armed-bandits">Introduction to K-Armed Bandits<a class="anchor" aria-label="anchor" href="#introduction-to-k-armed-bandits"></a>
+</h2>
 <p>Multi-armed Bandits, also called <span class="math inline">\(K\)</span>-armed Bandits, describe a type of reinforcement learning problem whereby an agent selects one of <em>K</em> possible arms for any number of trials. After each selection, the agent experiences a reinforcement which influences the agent’s action on the next trial. Multi-armed bandits can help formalize a number of real-world problems. Consider a developer who wants to try different application icons and find which one is most appealing to customers and maximizes the number of downloads. They might use a multi-armed bandit to learn which <span class="math inline">\(k\)</span>-icon maximizes positive reinforcements (number of downloads).</p>
 <p>Similar ideas are explained in greater detail in Alksandrs Slivkins textbook, <a href="https://arxiv.org/pdf/1904.07272.pdf" class="external-link">Introduction to Multi-Armed Bandits</a>. In the introduction, Slivkins describes the key points of bandit algorithms, highlighting the tradeoff between “exploration and exploitation: making optimal near-term decisions based on the available information.” Exploration involves selecting new arms; exploitation involves selecting the arm that previously led to the best reinforcement.</p>
 <p>This tradeoff is often formalized with a decision-making policy, describes how an agent makes a choice. In this package, we have implemented three widely-used policies: greedy, epsilon-greedy, and softmax.</p>
@@ -134,103 +134,10 @@
 <li>An agent with a ‘softmax’ policy has a parameter <code>tau</code>, which describes the propensity to explore the action space. The higher the tau (temperature), the more random the actions; the lower the tau (temperature), the more exploitative the actions (e.g., lower temperature increases the probability of taking the action with the highest expected value).</li>
 </ul>
 </div>
-<div class="section level1">
-<h1 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
-</h1>
 <div class="section level2">
-<h2 id="case-study-dissociable-effects-of-dopamine-and-serotonin-on-reversal-learning">Case Study: Dissociable Effects of Dopamine and Serotonin on Reversal Learning<a class="anchor" aria-label="anchor" href="#case-study-dissociable-effects-of-dopamine-and-serotonin-on-reversal-learning"></a>
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
-<p><a href="https://doi.org/10.1016/j.neuron.2013.08.030" class="external-link">den Ouden, Daw, and colleagues (2013)</a> studied how polymorphisms in genes encoding dopaminergic and serotonin transporters affected behavioral adaptations in a two-Armed Bandit ‘reversal learning’ task. They had 810 participants complete an 80-trial experiment where individuals selected between a yellow and a blue pattern to maximize a positive reinforcement (reward; green happy emoticon) and minimize a negative reinforcement (punishment; red sad/angry emoticon). For the first forty trials, one pattern yielded a reward with 70% probability and a punishment with 30% probability; the other pattern yielded a punishment with 70% probability and a reward with 30% probability. For the second forty trials, the probabilistic reward and punishment structure for each stimulus switched.</p>
-<p>Participants were instructed to “Choose the color which tends to be correct more often. You have to find out by trial and error which color that is. On certain moments the rule can change, i.e. the other color is now correct more often. Then, switch your response to that color. This can happen one or more times during the task.”<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<p>Using rlsims, we can simulate choice behavior on this task. The authors compared two reinforcement learning algorithms, experience-weighted attraction (EWA; <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-0262.00054" class="external-link">Camerer and Ho, 2003</a>) and a modified Rescorla Wagner (<a href="https://pubmed.ncbi.nlm.nih.gov/17913879/" class="external-link">Frank et al., 2007</a>), each with a softmax action-selection policy. Here, we demonstrate how to simulate a Q-Learning algorithm given the task constraints:<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
-<div class="section level3">
-<h3 id="define-agent">Define Agent<a class="anchor" aria-label="anchor" href="#define-agent"></a>
-</h3>
-<p>As with other Reinforcement Learning simulations using rlsims, we begin by creating an RL Agent with the specified model type (<code>model_type = "kArmedBandit"</code>). <code>model_id</code> is a (required) description to help distinguish multiple agents simulated in the same R session. From the experimental design, we know the task has 80 trials (<code>num_trials = 80</code>) and there are two arms (possible actions, <code>num_arms = 2</code>). We also need to specify the number of episodes per trial. In the simplest implementation, <span class="math inline">\(k\)</span>-armed bandits repeatedly (i) select an action and (ii) experiences a reinforcement. Therefore, we must have at least two episodes. In the first, the agent selects an arm (performs an action); in the second, the agent receives feedback. Here, we will also add an additional episode at the beginning to represent the stimulus presentation. The algorithmic implementation we use here requires that the reinforcement happen before the terminal episode in a trial.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> That is, <code>num_episodes = 3</code>, <code>action_episode = 2</code>, and <code>reinforcement_episode = 3</code>. For this vignette, we will arbitrarily define the temporal discounting factor, <span class="math inline">\(0 \leq \gamma \leq 1\)</span> as 1 and define a learning rate, <span class="math inline">\(\alpha\)</span> of 0.6.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">denOudenAgent2013</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rl_new_agent.html">rl_new_agent</a></span><span class="op">(</span>model_type <span class="op">=</span> <span class="st">"kArmedBandit"</span>, 
-                          model_id <span class="op">=</span> <span class="st">"denOuden2013 2-Armed Bandit Example"</span>, 
-                          num_trials <span class="op">=</span> <span class="fl">80</span>,
-                          num_episodes <span class="op">=</span> <span class="fl">4</span>,
-                          num_arms <span class="op">=</span> <span class="fl">2</span>, 
-                          action_episode <span class="op">=</span> <span class="fl">2</span>,
-                          reinforcement_episode <span class="op">=</span> <span class="fl">3</span>,
-                          gamma <span class="op">=</span> <span class="fl">1</span>,
-                          alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></code></pre></div>
-<p>As with other RL objects, this one has special printing properties describing meta information:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">denOudenAgent2013</span>
-<span class="co">#&gt; &lt;<span style="font-style: italic; text-decoration: underline;">kArmedBandit</span><span style="font-style: italic;"> Simulation Agent</span>&gt;</span>
-<span class="co">#&gt; ID: <span style="color: #0000BB;">"denOuden2013 2-Armed Bandit Example"</span></span>
-<span class="co">#&gt;   <span style="color: #0000BB;">2</span>-Armed Bandit</span>
-<span class="co">#&gt;   <span style="color: #0000BB;">80</span> Trials</span>
-<span class="co">#&gt;   <span style="color: #0000BB;">4</span> Episodes per Trial</span>
-<span class="co">#&gt;      • Action Episode: <span style="color: #0000BB;">2</span></span>
-<span class="co">#&gt;      • Reinforcement Episode: <span style="color: #0000BB;">3</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   Temporal Discounting Factor of <span style="color: #0000BB;">1</span></span>
-<span class="co">#&gt;   Learnrate of <span style="color: #0000BB;">0.6</span></span>
-<span class="co">#&gt;   Arm Structure: <span style="color: #FFD7D7; font-weight: bold; text-decoration: underline;">✖ not set</span></span>
-<span class="co">#&gt;   Action-Selection Policy: <span style="color: #FFD7D7; font-weight: bold; text-decoration: underline;">✖ not set</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="define-arm-structure">Define Arm Structure<a class="anchor" aria-label="anchor" href="#define-arm-structure"></a>
-</h3>
-<p>In order to simulate this agent, we need to define the arm structure and action-selection policy. In favoring explicit specifications (and to harmonize this package’s API as much as possible), the arms are defined as a list of data frames – similar to a ‘tdrlConditioning’ agent’s reinforcement structure. To define an arm, you must specify the <code>probability</code> of receiving a reinforcement of <code>magnitude</code> or the <code>alternative</code> magnitude (received with 1 - probability) by selecting an arm on a given <code>trial</code>.</p>
-<p>For the task described, the ‘blue’ arm yields a positive reinforcement of <code>magnitude = 1</code> for the first forty trials with 70% probability <code>probability = rep(0.7, 40)</code> or no reinforcement (<code>alternative = 0</code>); on the second forty trials, selecting the ‘blue’ arm yields a positive reinforcement with 30% probability <code>probability = rep(0.3, 40)</code>. The ‘yellow’ arm does the opposite. Combining these definitions, we can set the arm structure for this agent as shown below. For more documentation on these requirements, call <code><a href="../reference/rl_arms_define.html">?rl_arms_define</a></code> in the console.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">denOudenArms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  blue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-    probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span>,
-    magnitude <span class="op">=</span> <span class="fl">1</span>,
-    alternative <span class="op">=</span> <span class="fl">0</span>,
-    trial <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">80</span>
-  <span class="op">)</span>,
-  yellow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-    probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span>,
-    magnitude <span class="op">=</span> <span class="fl">1</span>,
-    alternative <span class="op">=</span> <span class="fl">0</span>,
-    trial <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">80</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">denOudenAgent2013</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/rl_set_arms.html">rl_set_arms</a></span><span class="op">(</span><span class="va">denOudenArms</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="define-action-selection-policy">Define Action-Selection Policy<a class="anchor" aria-label="anchor" href="#define-action-selection-policy"></a>
-</h3>
-<p>The authors used a softmax decision policy and estimated an inverse temperature, <span class="math inline">\(\beta\)</span> from their behavioral data. That seems like a good starting point for our simulation, so we can use the function <code>rl_set_policy</code> to define how our agent will sample the action space. It accepts the name (<code>policy = "softmax"</code>) and, if applicable, the modulating parameters. In this package, we implement the softmax policy using the temperature parameter, <span class="math inline">\(\tau\)</span>, to describe an agent’s propensity to explore the action space. The higher the temperature, the more random the actions; the lower the temperature, the more exploitative the actions (e.g., lower temperature increases the probability of taking the action with the highest expected value).</p>
-<p>den Ouden and colleagues estimated a median <span class="math inline">\(\beta\)</span> of <span class="math inline">\(\approx 4.5\)</span>. By taking its inverse, we can set our action-selection policy as follows:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># They used inverse temperature, so we're converting that to temperature</span>
-<span class="va">denOudenAgent2013</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/rl_set_policy.html">rl_set_policy</a></span><span class="op">(</span>policy <span class="op">=</span> <span class="st">"softmax"</span>, tau <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">4.5</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="simulate-and-explore-results">Simulate and Explore Results<a class="anchor" aria-label="anchor" href="#simulate-and-explore-results"></a>
-</h3>
-<p>Now it’s time to simulate our agent and explore our results. As with other RL Agents, we use <code><a href="../reference/rl_simulate_agent.html">rl_simulate_agent()</a></code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">denOudenAgent2013</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/rl_simulate_agent.html">rl_simulate_agent</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>To analyze the simulation data, we can use <code><a href="../reference/rl_get_pe_data.html">rlsims::rl_get_pe_data()</a></code> and <code><a href="../reference/rl_get_learned_values.html">rlsims::rl_get_learned_values()</a></code> to access the prediction error and estimated values of a given action/episode (depending on the algorithm the learned values definitions can vary). By default, these functions impute a ‘trial zero’ for plotting purposes, but that can be controlled with the arguments <code>add_trial_zero</code> and <code>trial_zero_value</code>. Below are the results of the simulation (plotting code removed for clarity but is available on GitHub!).</p>
-<p><img src="k-armed-bandit_files/figure-html/denOuden-pe-plot-1.png" width="700"></p>
-<p><img src="k-armed-bandit_files/figure-html/denOuden-learned-values-plot-1.png" width="700"></p>
-<p>It looks like the agent did learn the blue arm was better chosen during the first half. Although they it seems the agent began learning the yellow arm was more beneficial in the latter half, it was not sampled nearly as much (<code>denOuden2013$actions</code> will show the agent’s choices). This behavior can be modified with a higher temperature in the softmax decision policy, but we leave that experiment to you!</p>
-<p>With this case study, we’ve seen how to recreate bandit problems commonly used in neuroscientific investigations. An extension of this vignette, if you would like to try on your own, is to simulate multiple agents with similar – but not identical – learning rates (<span class="math inline">\(\alpha\)</span>) and temperatures (<span class="math inline">\(\tau\)</span>). Those simulations can be combined and analyzed to illustrate how certain behaviors might look on a population level and help inform experimental designs.<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
-</div>
-</div>
-</div>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>From the supplemental information, accessible <a href="https://www.cell.com/cms/10.1016/j.neuron.2013.08.030/attachment/0ff21f8c-619e-439d-b196-84bee8de7e97/mmc1.pdf" class="external-link">here</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>As of January 4, 2022 the ‘kArmed Bandit’ only supports a <a href="https://en.wikipedia.org/wiki/Q-learning" class="external-link">Q-Learning algorithm</a>, which is what we describe here. This vignette will be updated in the future as additional algorithm types are supported.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>Take a look at the <code>simulate_agent()</code> method of the kArmedBandit agent we define (e.g., <code>denOudenAgent2013$simulate_agent</code>).<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>If you notice in our plots, there are jerky movements which could be smoothed out by taking the median values across all simulated agents, for example.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-</ol>
+<p>Under construction!</p>
 </div>
   </div>
 
@@ -246,7 +153,7 @@
 
       <footer><div class="author">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
