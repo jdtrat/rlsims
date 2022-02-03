@@ -15,5 +15,22 @@ knitr::opts_chunk$set(
 library(magrittr)
 library(stats)
 ```
+## Introduction
+
+In the mid 1990s, P. Read Montague, Peter Dayan, and Terry Sejnowski described how the activity
+of mesencephalic dopaminergic neurons is predicted by a temporal-difference reinforcement
+learning (TDRL) algorithm. In their ground-breaking paper (link to paper here), they provide a
+framework for applying a TDRL algorithm to predict mesolimbic dopamine cell activity during simple
+decision-making tasks. Their model predictions successfully account for a wide-range of dopamine
+neuron responses to varying task structures, including: modifying cue and reinforcement schedules,
+temporal representations, and environmental noise. Using a TDRL algorithm to model and predict
+human choice behavior has since been experimentally replicated and verified in human and non-
+human primates (if interested in reading more, click here). Understanding how a TDRL algorithm
+can be used to simulate physiological and behavioral responses to decision-making tasks is
+important background knowledge to have prior to utilizing the models experimentally. Therefore, in
+this vignette, we will walk through how to simulate the results of Montague et al.’s model predictions
+with rlsims.
+
+---
 
 Under construction!
