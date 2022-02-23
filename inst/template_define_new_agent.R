@@ -12,6 +12,7 @@ R6::R6Class(
     {{{ public_fields }}},
     {{ #include_policy_method }}
       policy = NULL,
+      action_simulate_values = 'Q_val[,ep]',
     {{ /include_policy_method }}
 
     initialize = function(model_id, {{{ required_args }}}) {
@@ -178,9 +179,9 @@ R6::R6Class(
     # Return the parsed, but unevaluated function to simulate an action given the policy
     rl_action_simulate_function = function() {
       if (self$policy$type == "greedy") {
-        parse(text = 'rl_action_simulate(policy = "greedy", values = Q_val[, ep])')
+        parse(text = paste0('rl_action_simulate(policy = "greedy", values = ', self$action_simulate_values, ')'))
       } else {
-        parse(text = paste0('rl_action_simulate(policy = "', self$policy$type, '", values = Q_val[, ep], ', names(self$policy[2]), ' = ', self$policy[[2]], ')'))
+        parse(text = paste0('rl_action_simulate(policy = "', self$policy$type, '",  values = ', self$action_simulate_values, ',', names(self$policy[2]), ' = ', self$policy[[2]], ')'))
       }
     },
     {{ /include_policy_method }}
